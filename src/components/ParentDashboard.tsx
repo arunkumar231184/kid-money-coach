@@ -8,13 +8,14 @@ import { AchievementBadge } from "@/components/AchievementBadge";
 import { 
   User, 
   PiggyBank, 
-  TrendingUp, 
   Bell, 
   Settings, 
   ChevronRight,
   Wallet,
-  Plus
+  Plus,
+  Sparkles
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Mock data
 const mockTransactions = [
@@ -53,37 +54,45 @@ export function ParentDashboard() {
       
       <main className="container mx-auto px-4 py-6 space-y-6">
         {/* Child summary card */}
-        <Card className="p-5 hero-gradient text-primary-foreground">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-2xl">
-                👦
+        <Link to="/kid">
+          <Card className="p-5 hero-gradient text-primary-foreground cursor-pointer hover:shadow-glow transition-shadow">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-2xl">
+                  👦
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">Alex (14)</h2>
+                  <p className="text-primary-foreground/80 text-sm">Santander 123 Mini</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-bold">Alex (14)</h2>
-                <p className="text-primary-foreground/80 text-sm">Santander 123 Mini</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs bg-white/20 px-2 py-1 rounded-full flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  View Kid Mode
+                </span>
+                <ChevronRight className="w-6 h-6 text-primary-foreground/60" />
               </div>
             </div>
-            <ChevronRight className="w-6 h-6 text-primary-foreground/60" />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4 mt-5">
-            <div className="bg-white/10 backdrop-blur rounded-xl p-3">
-              <div className="flex items-center gap-2 text-primary-foreground/80 text-sm">
-                <Wallet className="w-4 h-4" />
-                Weekly Allowance
+            
+            <div className="grid grid-cols-2 gap-4 mt-5">
+              <div className="bg-white/10 backdrop-blur rounded-xl p-3">
+                <div className="flex items-center gap-2 text-primary-foreground/80 text-sm">
+                  <Wallet className="w-4 h-4" />
+                  Weekly Allowance
+                </div>
+                <p className="text-2xl font-bold mt-1">£20.00</p>
               </div>
-              <p className="text-2xl font-bold mt-1">£20.00</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-xl p-3">
-              <div className="flex items-center gap-2 text-primary-foreground/80 text-sm">
-                <PiggyBank className="w-4 h-4" />
-                Savings
+              <div className="bg-white/10 backdrop-blur rounded-xl p-3">
+                <div className="flex items-center gap-2 text-primary-foreground/80 text-sm">
+                  <PiggyBank className="w-4 h-4" />
+                  Savings
+                </div>
+                <p className="text-2xl font-bold mt-1">£12.50</p>
               </div>
-              <p className="text-2xl font-bold mt-1">£12.50</p>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </Link>
         
         {/* Weekly insight */}
         <InsightCard 
