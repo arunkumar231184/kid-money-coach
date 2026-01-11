@@ -83,15 +83,17 @@ export default function Landing() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in" style={{ animationDelay: "300ms" }}>
-                <Link to="/dashboard">
+                <Link to="/auth">
                   <Button variant="hero" size="xl">
                     Get Started Free
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
-                <Button variant="outline" size="xl">
-                  See Demo
-                </Button>
+                <Link to="/dashboard">
+                  <Button variant="outline" size="xl">
+                    See Demo
+                  </Button>
+                </Link>
               </div>
               
               {/* Social proof */}
@@ -235,7 +237,7 @@ export default function Landing() {
                   </li>
                 ))}
               </ul>
-              <Button variant="outline" className="w-full">Get Started Free</Button>
+              <Link to="/auth"><Button variant="outline" className="w-full">Get Started Free</Button></Link>
             </Card>
             
             {/* Premium plan */}
@@ -254,7 +256,7 @@ export default function Landing() {
                   </li>
                 ))}
               </ul>
-              <Button className="w-full">Start 14-Day Trial</Button>
+              <Link to="/auth"><Button className="w-full">Start 14-Day Trial</Button></Link>
             </Card>
           </div>
         </div>
@@ -269,10 +271,12 @@ export default function Landing() {
           <p className="text-lg text-primary-foreground/80 mb-8 max-w-xl mx-auto">
             Join 500+ UK families already using YouthMentor to build better financial habits.
           </p>
-          <Button variant="glass" size="xl">
-            Get Started Free
-            <ArrowRight className="w-5 h-5" />
-          </Button>
+          <Link to="/auth">
+            <Button variant="glass" size="xl">
+              Get Started Free
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </Link>
         </div>
       </section>
       

@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Coins, Menu, X, User } from "lucide-react";
+import { Coins, Menu, X, LogOut } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface NavbarProps {
   showAuth?: boolean;
@@ -11,6 +13,14 @@ interface NavbarProps {
 
 export function Navbar({ showAuth = true, className }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Logged out successfully");
+    navigate("/");
+  };
   
   return (
     <nav className={cn("w-full py-4 px-4 md:px-6", className)}>
@@ -39,14 +49,34 @@ export function Navbar({ showAuth = true, className }: NavbarProps) {
         </div>
         
         {/* Auth buttons */}
-        {showAuth && (
+        {showAuth && !loading && (
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm">
-              Log in
-            </Button>
-            <Button size="sm">
-              Get Started
-            </Button>
+            {user ? (
+              <>
+                <Link to="/dashboard">
+                  <Button variant="ghost" size="sm">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Log out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button variant="ghost" size="sm">
+                    Log in
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button size="sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         )}
         
@@ -76,11 +106,29 @@ export function Navbar({ showAuth = true, className }: NavbarProps) {
             <Link to="#about" className="text-sm font-medium text-foreground py-2">
               About
             </Link>
-            {showAuth && (
+            {showAuth && !loading && (
               <>
                 <hr className="border-border" />
-                <Button variant="outline" className="w-full">Log in</Button>
-                <Button className="w-full">Get Started</Button>
+                {user ? (
+                  <>
+                    <Link to="/dashboard">
+                      <Button variant="outline" className="w-full">Dashboard</Button>
+                    </Link>
+                    <Button variant="ghost" className="w-full" onClick={handleSignOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Log out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/auth">
+                      <Button variant="outline" className="w-full">Log in</Button>
+                    </Link>
+                    <Link to="/auth">
+                      <Button className="w-full">Get Started</Button>
+                    </Link>
+                  </>
+                )}
               </>
             )}
           </div>
