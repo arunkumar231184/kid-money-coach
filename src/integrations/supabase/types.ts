@@ -14,6 +14,163 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          description: string | null
+          earned_at: string
+          icon: string
+          id: string
+          kid_id: string
+          name: string
+          rarity: string
+        }
+        Insert: {
+          description?: string | null
+          earned_at?: string
+          icon: string
+          id?: string
+          kid_id: string
+          name: string
+          rarity?: string
+        }
+        Update: {
+          description?: string | null
+          earned_at?: string
+          icon?: string
+          id?: string
+          kid_id?: string
+          name?: string
+          rarity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "badges_kid_id_fkey"
+            columns: ["kid_id"]
+            isOneToOne: false
+            referencedRelation: "kids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges: {
+        Row: {
+          created_at: string
+          current_days: number | null
+          current_value: number | null
+          description: string | null
+          end_date: string | null
+          id: string
+          kid_id: string
+          reward_badge: string | null
+          reward_xp: number | null
+          start_date: string
+          status: string
+          target_days: number | null
+          target_value: number
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_days?: number | null
+          current_value?: number | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          kid_id: string
+          reward_badge?: string | null
+          reward_xp?: number | null
+          start_date?: string
+          status?: string
+          target_days?: number | null
+          target_value: number
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_days?: number | null
+          current_value?: number | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          kid_id?: string
+          reward_badge?: string | null
+          reward_xp?: number | null
+          start_date?: string
+          status?: string
+          target_days?: number | null
+          target_value?: number
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_kid_id_fkey"
+            columns: ["kid_id"]
+            isOneToOne: false
+            referencedRelation: "kids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kids: {
+        Row: {
+          age: number
+          allowance_amount: number | null
+          allowance_frequency: string | null
+          avatar_url: string | null
+          bank_account_connected: boolean | null
+          created_at: string
+          current_streak: number | null
+          id: string
+          level: number | null
+          name: string
+          parent_id: string
+          total_badges: number | null
+          total_saved: number | null
+          updated_at: string
+          xp_points: number | null
+        }
+        Insert: {
+          age: number
+          allowance_amount?: number | null
+          allowance_frequency?: string | null
+          avatar_url?: string | null
+          bank_account_connected?: boolean | null
+          created_at?: string
+          current_streak?: number | null
+          id?: string
+          level?: number | null
+          name: string
+          parent_id: string
+          total_badges?: number | null
+          total_saved?: number | null
+          updated_at?: string
+          xp_points?: number | null
+        }
+        Update: {
+          age?: number
+          allowance_amount?: number | null
+          allowance_frequency?: string | null
+          avatar_url?: string | null
+          bank_account_connected?: boolean | null
+          created_at?: string
+          current_streak?: number | null
+          id?: string
+          level?: number | null
+          name?: string
+          parent_id?: string
+          total_badges?: number | null
+          total_saved?: number | null
+          updated_at?: string
+          xp_points?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -41,12 +198,138 @@ export type Database = {
         }
         Relationships: []
       }
+      savings_goals: {
+        Row: {
+          created_at: string
+          current_amount: number | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          kid_id: string
+          name: string
+          target_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_amount?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          kid_id: string
+          name: string
+          target_amount: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_amount?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          kid_id?: string
+          name?: string
+          target_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "savings_goals_kid_id_fkey"
+            columns: ["kid_id"]
+            isOneToOne: false
+            referencedRelation: "kids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_income: boolean | null
+          kid_id: string
+          merchant: string
+          transaction_date: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_income?: boolean | null
+          kid_id: string
+          merchant: string
+          transaction_date?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_income?: boolean | null
+          kid_id?: string
+          merchant?: string
+          transaction_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_kid_id_fkey"
+            columns: ["kid_id"]
+            isOneToOne: false
+            referencedRelation: "kids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weekly_insights: {
+        Row: {
+          created_at: string
+          id: string
+          insight_type: string
+          is_read: boolean | null
+          kid_id: string
+          message: string
+          week_ending: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          insight_type: string
+          is_read?: boolean | null
+          kid_id: string
+          message: string
+          week_ending: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          insight_type?: string
+          is_read?: boolean | null
+          kid_id?: string
+          message?: string
+          week_ending?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_insights_kid_id_fkey"
+            columns: ["kid_id"]
+            isOneToOne: false
+            referencedRelation: "kids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      user_owns_kid: { Args: { kid_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
