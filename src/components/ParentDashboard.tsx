@@ -1,14 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TransactionList } from "@/components/TransactionList";
 import { ChallengeCard } from "@/components/ChallengeCard";
-import { SavingsThermometer } from "@/components/SavingsThermometer";
 import { InsightCard } from "@/components/InsightCard";
 import { AchievementBadge } from "@/components/AchievementBadge";
 import { ChildCard } from "@/components/ChildCard";
 import { EmptyKidsState } from "@/components/EmptyKidsState";
 import { AddChildDialog } from "@/components/AddChildDialog";
+import { CreateChallengeDialog } from "@/components/CreateChallengeDialog";
 import { useKids, useDeleteKid } from "@/hooks/useKids";
+import { useActiveChallenges, useDeleteChallenge } from "@/hooks/useChallenges";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   User, 
@@ -20,23 +20,28 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { differenceInDays } from "date-fns";
 
-// Mock data for demo purposes (will be replaced with real data later)
-const mockTransactions = [
-  { id: "1", merchant: "Steam", amount: 4.99, category: "gaming" as const, date: "Today, 2:30 PM" },
-  { id: "2", merchant: "Costa Coffee", amount: 3.20, category: "snacks" as const, date: "Today, 11:15 AM" },
-  { id: "3", merchant: "Boots", amount: 8.50, category: "fashion" as const, date: "Yesterday" },
-  { id: "4", merchant: "TfL", amount: 2.40, category: "transport" as const, date: "Yesterday" },
-  { id: "5", merchant: "Allowance", amount: 20.00, category: "savings" as const, date: "Monday", isCredit: true },
-];
+import type { ChallengeType, ChallengeStatus } from "@/components/ChallengeCard";
+
+// Map challenge types to ChallengeCard types
+const challengeTypeMap: Record<string, ChallengeType> = {
+  snack_tracker: "snack-tracker",
+  save_percentage: "save-allowance",
+  no_impulse: "no-impulse",
+  round_ups: "round-ups",
+  savings_goal: "goal",
+};
 
 export function ParentDashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { data: kids, isLoading, refetch } = useKids();
   const deleteKidMutation = useDeleteKid();
+  const deleteChallengesMutation = useDeleteChallenge();
+
+  const selectedKid = kids?.[0]; // For now, show first kid's data
+  const { data: activeChallenges, refetch: refetchChallenges } = useActiveChallenges(selectedKid?.id);
 
   const handleSignOut = async () => {
     await signOut();
@@ -57,7 +62,9 @@ export function ParentDashboard() {
     refetch();
   };
 
-  const selectedKid = kids?.[0]; // For now, show first kid's data in detail sections
+  const handleChallengeCreated = () => {
+    refetchChallenges();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -125,7 +132,9 @@ export function ParentDashboard() {
             {/* Weekly insight */}
             <InsightCard 
               title="Weekly Insight"
-              message="Add transactions to start seeing spending insights and patterns. Connect a bank account for automatic tracking!"
+              message={activeChallenges && activeChallenges.length > 0 
+                ? `${selectedKid.name} has ${activeChallenges.length} active challenge${activeChallenges.length > 1 ? 's' : ''}. Keep encouraging them!`
+                : "Create your first challenge to start building great money habits!"}
               trend="neutral"
               category="Getting Started"
               actionLabel="Learn more"
@@ -135,20 +144,50 @@ export function ParentDashboard() {
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-foreground">Active Challenges</h3>
-                <Button variant="ghost" size="sm" className="text-primary">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add
-                </Button>
+                <CreateChallengeDialog 
+                  kid={selectedKid} 
+                  onChallengeCreated={handleChallengeCreated}
+                />
               </div>
-              <Card className="p-6 text-center border-dashed border-2">
-                <p className="text-muted-foreground">
-                  No active challenges yet. Create one to help {selectedKid.name} build better money habits!
-                </p>
-                <Button variant="outline" className="mt-4">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Challenge
-                </Button>
-              </Card>
+              
+              {activeChallenges && activeChallenges.length > 0 ? (
+                <div className="space-y-3">
+                  {activeChallenges.map((challenge) => {
+                    const daysLeft = challenge.end_date 
+                      ? Math.max(0, differenceInDays(new Date(challenge.end_date), new Date()))
+                      : challenge.target_days ?? 7;
+                    
+                    return (
+                      <ChallengeCard
+                        key={challenge.id}
+                        type={challengeTypeMap[challenge.type] || "goal"}
+                        title={challenge.title}
+                        description={challenge.description || ""}
+                        progress={Number(challenge.current_value) || 0}
+                        target={Number(challenge.target_value)}
+                        status={(challenge.status as ChallengeStatus) || "active"}
+                        daysLeft={daysLeft}
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <Card className="p-6 text-center border-dashed border-2">
+                  <p className="text-muted-foreground">
+                    No active challenges yet. Create one to help {selectedKid.name} build better money habits!
+                  </p>
+                  <CreateChallengeDialog 
+                    kid={selectedKid}
+                    onChallengeCreated={handleChallengeCreated}
+                    trigger={
+                      <Button variant="outline" className="mt-4">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Challenge
+                      </Button>
+                    }
+                  />
+                </Card>
+              )}
             </section>
             
             {/* Savings goal */}

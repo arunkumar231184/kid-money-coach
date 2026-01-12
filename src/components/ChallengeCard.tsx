@@ -2,8 +2,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Trophy, Flame, Target, Coins, ShoppingBag } from "lucide-react";
 
-type ChallengeType = "snack-tracker" | "save-allowance" | "no-impulse" | "round-ups" | "goal";
-type ChallengeStatus = "active" | "completed" | "upcoming";
+export type ChallengeType = "snack-tracker" | "save-allowance" | "no-impulse" | "round-ups" | "goal";
+export type ChallengeStatus = "active" | "completed" | "upcoming" | "failed" | "paused";
 
 interface ChallengeCardProps {
   type: ChallengeType;
