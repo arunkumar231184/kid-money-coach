@@ -5,19 +5,24 @@ import { ChallengeCard } from "@/components/ChallengeCard";
 import { SavingsThermometer } from "@/components/SavingsThermometer";
 import { InsightCard } from "@/components/InsightCard";
 import { AchievementBadge } from "@/components/AchievementBadge";
+import { ChildCard } from "@/components/ChildCard";
+import { EmptyKidsState } from "@/components/EmptyKidsState";
+import { AddChildDialog } from "@/components/AddChildDialog";
+import { useKids, useDeleteKid } from "@/hooks/useKids";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   User, 
-  PiggyBank, 
   Bell, 
   Settings, 
-  ChevronRight,
-  Wallet,
   Plus,
-  Sparkles
+  Loader2,
+  LogOut
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
-// Mock data
+// Mock data for demo purposes (will be replaced with real data later)
 const mockTransactions = [
   { id: "1", merchant: "Steam", amount: 4.99, category: "gaming" as const, date: "Today, 2:30 PM" },
   { id: "2", merchant: "Costa Coffee", amount: 3.20, category: "snacks" as const, date: "Today, 11:15 AM" },
@@ -27,6 +32,33 @@ const mockTransactions = [
 ];
 
 export function ParentDashboard() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data: kids, isLoading, refetch } = useKids();
+  const deleteKidMutation = useDeleteKid();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Logged out successfully");
+    navigate("/");
+  };
+
+  const handleDeleteKid = async (kidId: string) => {
+    try {
+      await deleteKidMutation.mutateAsync(kidId);
+      toast.success("Child removed successfully");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to remove child");
+    }
+  };
+
+  const handleChildAdded = () => {
+    refetch();
+  };
+
+  const selectedKid = kids?.[0]; // For now, show first kid's data in detail sections
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -38,7 +70,9 @@ export function ParentDashboard() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Good morning</p>
-              <p className="font-semibold text-foreground">Sarah's Dashboard</p>
+              <p className="font-semibold text-foreground">
+                {user?.user_metadata?.full_name || "Parent"}'s Dashboard
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -48,128 +82,120 @@ export function ParentDashboard() {
             <Button variant="ghost" size="icon">
               <Settings className="w-5 h-5" />
             </Button>
+            <Button variant="ghost" size="icon" onClick={handleSignOut}>
+              <LogOut className="w-5 h-5" />
+            </Button>
           </div>
         </div>
       </header>
       
       <main className="container mx-auto px-4 py-6 space-y-6">
-        {/* Child summary card */}
-        <Link to="/kid">
-          <Card className="p-5 hero-gradient text-primary-foreground cursor-pointer hover:shadow-glow transition-shadow">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-2xl">
-                  👦
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">Alex (14)</h2>
-                  <p className="text-primary-foreground/80 text-sm">Santander 123 Mini</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs bg-white/20 px-2 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
-                  View Kid Mode
-                </span>
-                <ChevronRight className="w-6 h-6 text-primary-foreground/60" />
-              </div>
+        {/* Children section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">Your Children</h3>
+            {kids && kids.length > 0 && (
+              <AddChildDialog onChildAdded={handleChildAdded} />
+            )}
+          </div>
+          
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
+          ) : kids && kids.length > 0 ? (
+            <div className="space-y-4">
+              {kids.map((kid) => (
+                <ChildCard
+                  key={kid.id}
+                  kid={kid}
+                  onDelete={handleDeleteKid}
+                  isDeleting={deleteKidMutation.isPending}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyKidsState onChildAdded={handleChildAdded} />
+          )}
+        </section>
+
+        {/* Show detailed sections only if there are kids */}
+        {selectedKid && (
+          <>
+            {/* Weekly insight */}
+            <InsightCard 
+              title="Weekly Insight"
+              message="Add transactions to start seeing spending insights and patterns. Connect a bank account for automatic tracking!"
+              trend="neutral"
+              category="Getting Started"
+              actionLabel="Learn more"
+            />
             
-            <div className="grid grid-cols-2 gap-4 mt-5">
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3">
-                <div className="flex items-center gap-2 text-primary-foreground/80 text-sm">
-                  <Wallet className="w-4 h-4" />
-                  Weekly Allowance
-                </div>
-                <p className="text-2xl font-bold mt-1">£20.00</p>
+            {/* Active challenges */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Active Challenges</h3>
+                <Button variant="ghost" size="sm" className="text-primary">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add
+                </Button>
               </div>
-              <div className="bg-white/10 backdrop-blur rounded-xl p-3">
-                <div className="flex items-center gap-2 text-primary-foreground/80 text-sm">
-                  <PiggyBank className="w-4 h-4" />
-                  Savings
-                </div>
-                <p className="text-2xl font-bold mt-1">£12.50</p>
+              <Card className="p-6 text-center border-dashed border-2">
+                <p className="text-muted-foreground">
+                  No active challenges yet. Create one to help {selectedKid.name} build better money habits!
+                </p>
+                <Button variant="outline" className="mt-4">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Challenge
+                </Button>
+              </Card>
+            </section>
+            
+            {/* Savings goal */}
+            <section>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Savings Goal</h3>
+              <Card className="p-6 text-center border-dashed border-2">
+                <p className="text-muted-foreground">
+                  No savings goal set. Help {selectedKid.name} save for something special!
+                </p>
+                <Button variant="outline" className="mt-4">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Set Goal
+                </Button>
+              </Card>
+            </section>
+            
+            {/* Badges earned */}
+            <section>
+              <h3 className="text-lg font-semibold text-foreground mb-4">{selectedKid.name}'s Badges</h3>
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                <AchievementBadge type="first-week" earned={false} />
+                <AchievementBadge type="streak" earned={false} />
+                <AchievementBadge type="saver" earned={false} />
+                <AchievementBadge type="goal" earned={false} />
               </div>
-            </div>
-          </Card>
-        </Link>
-        
-        {/* Weekly insight */}
-        <InsightCard 
-          title="Weekly Insight"
-          message="Snacks spending is up 25% compared to last week. Costa visits account for most of this - maybe a chat about bringing a flask to school?"
-          trend="up"
-          category="Snacks +25%"
-          actionLabel="Start a conversation"
-        />
-        
-        {/* Active challenges */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Active Challenges</h3>
-            <Button variant="ghost" size="sm" className="text-primary">
-              <Plus className="w-4 h-4 mr-1" />
-              Add
-            </Button>
-          </div>
-          <div className="space-y-3">
-            <ChallengeCard 
-              type="save-allowance"
-              title="Save £5 This Week"
-              description="Put aside £5 from your allowance"
-              progress={3}
-              target={7}
-              status="active"
-              daysLeft={4}
-            />
-            <ChallengeCard 
-              type="snack-tracker"
-              title="Snack Budget £10"
-              description="Keep snacks under £10 this week"
-              progress={6.70}
-              target={10}
-              status="active"
-              daysLeft={4}
-            />
-          </div>
-        </section>
-        
-        {/* Savings goal */}
-        <section>
-          <h3 className="text-lg font-semibold text-foreground mb-4">Savings Goal</h3>
-          <Card className="p-4">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">👟</span>
-              <div>
-                <h4 className="font-semibold">New Trainers</h4>
-                <p className="text-sm text-muted-foreground">Nike Air Max</p>
+            </section>
+            
+            {/* Recent transactions */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Recent Transactions</h3>
+                <Button variant="ghost" size="sm" className="text-primary">
+                  View all
+                </Button>
               </div>
-            </div>
-            <SavingsThermometer current={12.50} goal={85} label="" />
-          </Card>
-        </section>
-        
-        {/* Badges earned */}
-        <section>
-          <h3 className="text-lg font-semibold text-foreground mb-4">Alex's Badges</h3>
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            <AchievementBadge type="first-week" earned />
-            <AchievementBadge type="streak" earned count={3} />
-            <AchievementBadge type="saver" earned={false} />
-            <AchievementBadge type="goal" earned={false} />
-          </div>
-        </section>
-        
-        {/* Recent transactions */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Recent Transactions</h3>
-            <Button variant="ghost" size="sm" className="text-primary">
-              View all
-            </Button>
-          </div>
-          <TransactionList transactions={mockTransactions} />
-        </section>
+              <Card className="p-6 text-center border-dashed border-2">
+                <p className="text-muted-foreground">
+                  No transactions yet. Connect a bank account or add transactions manually.
+                </p>
+                <Button variant="outline" className="mt-4">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Transaction
+                </Button>
+              </Card>
+            </section>
+          </>
+        )}
       </main>
     </div>
   );
