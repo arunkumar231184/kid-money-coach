@@ -7,8 +7,11 @@ import { ChildCard } from "@/components/ChildCard";
 import { EmptyKidsState } from "@/components/EmptyKidsState";
 import { AddChildDialog } from "@/components/AddChildDialog";
 import { CreateChallengeDialog } from "@/components/CreateChallengeDialog";
+import { CreateSavingsGoalDialog } from "@/components/CreateSavingsGoalDialog";
+import { SavingsGoalCard } from "@/components/SavingsGoalCard";
 import { useKids, useDeleteKid } from "@/hooks/useKids";
 import { useActiveChallenges, useDeleteChallenge } from "@/hooks/useChallenges";
+import { useSavingsGoals, useDeleteSavingsGoal } from "@/hooks/useSavingsGoals";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   User, 
@@ -42,6 +45,8 @@ export function ParentDashboard() {
 
   const selectedKid = kids?.[0]; // For now, show first kid's data
   const { data: activeChallenges, refetch: refetchChallenges } = useActiveChallenges(selectedKid?.id);
+  const { data: savingsGoals, refetch: refetchSavingsGoals } = useSavingsGoals(selectedKid?.id);
+  const deleteSavingsGoalMutation = useDeleteSavingsGoal();
 
   const handleSignOut = async () => {
     await signOut();
@@ -64,6 +69,20 @@ export function ParentDashboard() {
 
   const handleChallengeCreated = () => {
     refetchChallenges();
+  };
+
+  const handleSavingsGoalCreated = () => {
+    refetchSavingsGoals();
+  };
+
+  const handleDeleteSavingsGoal = async (goalId: string) => {
+    if (!selectedKid) return;
+    try {
+      await deleteSavingsGoalMutation.mutateAsync({ id: goalId, kidId: selectedKid.id });
+      toast.success("Savings goal removed");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to remove savings goal");
+    }
   };
 
   return (
@@ -190,18 +209,44 @@ export function ParentDashboard() {
               )}
             </section>
             
-            {/* Savings goal */}
+            {/* Savings goals */}
             <section>
-              <h3 className="text-lg font-semibold text-foreground mb-4">Savings Goal</h3>
-              <Card className="p-6 text-center border-dashed border-2">
-                <p className="text-muted-foreground">
-                  No savings goal set. Help {selectedKid.name} save for something special!
-                </p>
-                <Button variant="outline" className="mt-4">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Set Goal
-                </Button>
-              </Card>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Savings Goals</h3>
+                <CreateSavingsGoalDialog 
+                  kid={selectedKid} 
+                  onGoalCreated={handleSavingsGoalCreated}
+                />
+              </div>
+              
+              {savingsGoals && savingsGoals.length > 0 ? (
+                <div className="space-y-3">
+                  {savingsGoals.map((goal) => (
+                    <SavingsGoalCard
+                      key={goal.id}
+                      goal={goal}
+                      onDelete={handleDeleteSavingsGoal}
+                      isDeleting={deleteSavingsGoalMutation.isPending}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Card className="p-6 text-center border-dashed border-2">
+                  <p className="text-muted-foreground">
+                    No savings goals yet. Help {selectedKid.name} save for something special!
+                  </p>
+                  <CreateSavingsGoalDialog 
+                    kid={selectedKid}
+                    onGoalCreated={handleSavingsGoalCreated}
+                    trigger={
+                      <Button variant="outline" className="mt-4">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Set Goal
+                      </Button>
+                    }
+                  />
+                </Card>
+              )}
             </section>
             
             {/* Badges earned */}
