@@ -35,7 +35,7 @@ export function ChildCard({ kid, onDelete, isDeleting }: ChildCardProps) {
 
   return (
     <Card className="p-5 hero-gradient text-primary-foreground relative overflow-hidden">
-      <Link to={`/kid?id=${kid.id}`} className="block">
+      <Link to={`/kid/${kid.id}`} className="block">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-2xl">

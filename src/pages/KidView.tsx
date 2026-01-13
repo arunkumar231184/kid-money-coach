@@ -8,62 +8,115 @@ import {
   Star,
   ArrowLeft,
   Gift,
-  Zap
+  Zap,
+  Loader2
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useKid } from "@/hooks/useKids";
+import { useActiveChallenges } from "@/hooks/useChallenges";
+import { useSavingsGoals } from "@/hooks/useSavingsGoals";
+import { useBadges } from "@/hooks/useBadges";
 
-// Mock data for the kid
-const kidData = {
-  name: "Alex",
-  avatar: "👦",
-  streak: 3,
-  totalBadges: 2,
-  level: 4,
-  xp: 340,
-  xpToNext: 500,
+// Badge type mapping from database icons to AchievementBadge types
+const badgeTypeMap: Record<string, "saver" | "streak" | "goal" | "first-week" | "challenge-master"> = {
+  "coins": "saver",
+  "flame": "streak", 
+  "target": "goal",
+  "star": "first-week",
+  "trophy": "challenge-master",
 };
 
-const challenges = [
-  { 
-    id: 1, 
-    title: "Save £5 This Week", 
-    emoji: "💰", 
-    progress: 3, 
-    target: 7, 
-    daysLeft: 4,
-    color: "from-emerald-400 to-teal-500"
-  },
-  { 
-    id: 2, 
-    title: "Snack Budget £10", 
-    emoji: "🍿", 
-    progress: 6.70, 
-    target: 10, 
-    daysLeft: 4,
-    color: "from-orange-400 to-amber-500"
-  },
-];
+// Calculate XP needed for each level
+const getXpForLevel = (level: number) => level * 100;
 
-const savingsGoal = {
-  name: "New Trainers",
-  emoji: "👟",
-  current: 12.50,
-  target: 85,
-  image: "Nike Air Max",
+// Challenge color mapping
+const challengeColors: Record<string, string> = {
+  "snack-tracker": "from-orange-400 to-amber-500",
+  "save-50": "from-emerald-400 to-teal-500",
+  "no-impulse": "from-purple-400 to-violet-500",
+  "round-ups": "from-blue-400 to-cyan-500",
+  "custom-goal": "from-pink-400 to-rose-500",
 };
 
-const badges = [
-  { type: "first-week" as const, earned: true },
-  { type: "streak" as const, earned: true, count: 3 },
-  { type: "saver" as const, earned: false },
-  { type: "goal" as const, earned: false },
-  { type: "challenge-master" as const, earned: false },
+const challengeEmojis: Record<string, string> = {
+  "snack-tracker": "🍿",
+  "save-50": "💰",
+  "no-impulse": "🎯",
+  "round-ups": "🔄",
+  "custom-goal": "⭐",
+};
+
+// All available badge types
+const allBadgeTypes: Array<"saver" | "streak" | "goal" | "first-week" | "challenge-master"> = [
+  "first-week",
+  "streak",
+  "saver",
+  "goal",
+  "challenge-master",
 ];
+
+const avatarEmojis = ["👦", "👧", "🧒", "👶", "🧑"];
 
 export default function KidView() {
-  const xpPercentage = (kidData.xp / kidData.xpToNext) * 100;
-  const savingsPercentage = (savingsGoal.current / savingsGoal.target) * 100;
+  const { kidId } = useParams<{ kidId: string }>();
+  
+  const { data: kid, isLoading: isLoadingKid } = useKid(kidId);
+  const { data: challenges = [], isLoading: isLoadingChallenges } = useActiveChallenges(kidId);
+  const { data: savingsGoals = [], isLoading: isLoadingSavings } = useSavingsGoals(kidId);
+  const { data: earnedBadges = [], isLoading: isLoadingBadges } = useBadges(kidId);
+
+  const isLoading = isLoadingKid || isLoadingChallenges || isLoadingSavings || isLoadingBadges;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary-light via-background to-accent-light flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!kid) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary-light via-background to-accent-light flex flex-col items-center justify-center gap-4">
+        <p className="text-muted-foreground">Kid not found</p>
+        <Link to="/dashboard">
+          <Button variant="outline">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const avatarEmoji = avatarEmojis[kid.name.charCodeAt(0) % avatarEmojis.length];
+  const xpToNext = getXpForLevel(kid.level ?? 1);
+  const xpPercentage = ((kid.xp_points ?? 0) / xpToNext) * 100;
+  
+  // Get the first active savings goal
+  const primarySavingsGoal = savingsGoals[0];
+  const savingsPercentage = primarySavingsGoal 
+    ? ((primarySavingsGoal.current_amount ?? 0) / primarySavingsGoal.target_amount) * 100 
+    : 0;
+
+  // Map earned badges by icon type
+  const earnedBadgeIcons = new Set(earnedBadges.map(b => b.icon.toLowerCase()));
+
+  // Create badge display list with earned status
+  const badgeDisplay = allBadgeTypes.map(type => {
+    const iconKey = type === "first-week" ? "star" : 
+                    type === "challenge-master" ? "trophy" :
+                    type === "streak" ? "flame" :
+                    type === "goal" ? "target" : "coins";
+    return {
+      type,
+      earned: earnedBadgeIcons.has(iconKey),
+      count: type === "streak" ? (kid.current_streak ?? 0) : undefined,
+    };
+  });
+
+  const totalEarnedBadges = badgeDisplay.filter(b => b.earned).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary-light via-background to-accent-light">
@@ -76,7 +129,7 @@ export default function KidView() {
           </Link>
           <div className="flex items-center gap-2">
             <Flame className="w-5 h-5 text-accent" />
-            <span className="font-bold text-accent">{kidData.streak} day streak!</span>
+            <span className="font-bold text-accent">{kid.current_streak ?? 0} day streak!</span>
           </div>
         </div>
       </header>
@@ -89,10 +142,10 @@ export default function KidView() {
           
           <div className="relative z-10 flex items-center gap-4">
             <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-5xl shadow-lg animate-bounce-gentle">
-              {kidData.avatar}
+              {avatarEmoji}
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold">Hey {kidData.name}! 👋</h1>
+              <h1 className="text-2xl font-bold">Hey {kid.name}! 👋</h1>
               <p className="text-primary-foreground/80 mt-1">You're doing amazing!</p>
               
               {/* Level progress */}
@@ -100,9 +153,9 @@ export default function KidView() {
                 <div className="flex items-center justify-between text-sm mb-1">
                   <span className="flex items-center gap-1">
                     <Star className="w-4 h-4 fill-current" />
-                    Level {kidData.level}
+                    Level {kid.level ?? 1}
                   </span>
-                  <span>{kidData.xp} / {kidData.xpToNext} XP</span>
+                  <span>{kid.xp_points ?? 0} / {xpToNext} XP</span>
                 </div>
                 <div className="h-3 bg-white/20 rounded-full overflow-hidden">
                   <div 
@@ -119,63 +172,77 @@ export default function KidView() {
         <div className="grid grid-cols-3 gap-3">
           <Card className="p-4 text-center bg-success-light border-success/20">
             <div className="text-3xl mb-1">🏆</div>
-            <p className="text-2xl font-bold text-success">{kidData.totalBadges}</p>
+            <p className="text-2xl font-bold text-success">{kid.total_badges ?? 0}</p>
             <p className="text-xs text-muted-foreground">Badges</p>
           </Card>
           <Card className="p-4 text-center bg-accent-light border-accent/20">
             <div className="text-3xl mb-1">🔥</div>
-            <p className="text-2xl font-bold text-accent">{kidData.streak}</p>
+            <p className="text-2xl font-bold text-accent">{kid.current_streak ?? 0}</p>
             <p className="text-xs text-muted-foreground">Day Streak</p>
           </Card>
           <Card className="p-4 text-center bg-primary-light border-primary/20">
             <div className="text-3xl mb-1">⭐</div>
-            <p className="text-2xl font-bold text-primary">{kidData.level}</p>
+            <p className="text-2xl font-bold text-primary">{kid.level ?? 1}</p>
             <p className="text-xs text-muted-foreground">Level</p>
           </Card>
         </div>
 
         {/* Savings Goal - Big Visual */}
-        <section>
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="w-6 h-6 text-primary" />
-            <h2 className="text-xl font-bold text-foreground">My Savings Goal</h2>
-          </div>
-          
-          <Card className="p-6 bg-gradient-to-br from-success-light to-emerald-100 border-success/20 relative overflow-hidden">
-            <div className="absolute top-4 right-4 text-6xl opacity-20 animate-float">
-              {savingsGoal.emoji}
+        {primarySavingsGoal ? (
+          <section>
+            <div className="flex items-center gap-2 mb-4">
+              <Target className="w-6 h-6 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">My Savings Goal</h2>
             </div>
             
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-success/20 flex items-center justify-center text-4xl">
-                {savingsGoal.emoji}
+            <Card className="p-6 bg-gradient-to-br from-success-light to-emerald-100 border-success/20 relative overflow-hidden">
+              <div className="absolute top-4 right-4 text-6xl opacity-20 animate-float">
+                {primarySavingsGoal.icon}
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-foreground">{savingsGoal.name}</h3>
-                <p className="text-sm text-muted-foreground">{savingsGoal.image}</p>
-              </div>
-            </div>
-            
-            {/* Thermometer */}
-            <div className="relative">
-              <div className="flex justify-between text-sm mb-2">
-                <span className="font-medium text-foreground">£{savingsGoal.current.toFixed(2)}</span>
-                <span className="font-medium text-muted-foreground">£{savingsGoal.target}</span>
-              </div>
-              <div className="h-8 bg-white rounded-full overflow-hidden shadow-inner">
-                <div 
-                  className="h-full bg-gradient-to-r from-success via-emerald-400 to-teal-400 rounded-full relative transition-all duration-1000 flex items-center justify-end pr-2"
-                  style={{ width: `${Math.max(savingsPercentage, 10)}%` }}
-                >
-                  <span className="text-xs font-bold text-white">{savingsPercentage.toFixed(0)}%</span>
+              
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-success/20 flex items-center justify-center text-4xl">
+                  {primarySavingsGoal.icon}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">{primarySavingsGoal.name}</h3>
+                  <p className="text-sm text-muted-foreground">Keep saving!</p>
                 </div>
               </div>
-              <p className="text-center text-sm text-muted-foreground mt-3">
-                <span className="font-semibold text-success">£{(savingsGoal.target - savingsGoal.current).toFixed(2)}</span> more to go! You've got this! 💪
-              </p>
+              
+              {/* Thermometer */}
+              <div className="relative">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="font-medium text-foreground">£{(primarySavingsGoal.current_amount ?? 0).toFixed(2)}</span>
+                  <span className="font-medium text-muted-foreground">£{primarySavingsGoal.target_amount.toFixed(2)}</span>
+                </div>
+                <div className="h-8 bg-white rounded-full overflow-hidden shadow-inner">
+                  <div 
+                    className="h-full bg-gradient-to-r from-success via-emerald-400 to-teal-400 rounded-full relative transition-all duration-1000 flex items-center justify-end pr-2"
+                    style={{ width: `${Math.max(savingsPercentage, 10)}%` }}
+                  >
+                    <span className="text-xs font-bold text-white">{savingsPercentage.toFixed(0)}%</span>
+                  </div>
+                </div>
+                <p className="text-center text-sm text-muted-foreground mt-3">
+                  <span className="font-semibold text-success">
+                    £{(primarySavingsGoal.target_amount - (primarySavingsGoal.current_amount ?? 0)).toFixed(2)}
+                  </span> more to go! You've got this! 💪
+                </p>
+              </div>
+            </Card>
+          </section>
+        ) : (
+          <section>
+            <div className="flex items-center gap-2 mb-4">
+              <Target className="w-6 h-6 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">My Savings Goal</h2>
             </div>
-          </Card>
-        </section>
+            <Card className="p-6 text-center text-muted-foreground">
+              <p>No savings goal set yet. Ask your parent to create one!</p>
+            </Card>
+          </section>
+        )}
 
         {/* Active Challenges */}
         <section>
@@ -184,62 +251,80 @@ export default function KidView() {
             <h2 className="text-xl font-bold text-foreground">My Challenges</h2>
           </div>
           
-          <div className="space-y-4">
-            {challenges.map((challenge, index) => (
-              <Card 
-                key={challenge.id} 
-                className={cn(
-                  "p-5 border-2 overflow-hidden relative animate-fade-in",
-                  challenge.progress >= challenge.target 
-                    ? "border-success bg-success-light" 
-                    : "border-primary/20"
-                )}
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="flex items-start gap-4">
-                  {/* Emoji */}
-                  <div className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-gradient-to-br shadow-lg",
-                    challenge.color
-                  )}>
-                    {challenge.emoji}
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-foreground text-lg">{challenge.title}</h3>
-                      <span className="flex items-center gap-1 text-sm bg-accent/10 text-accent px-2 py-1 rounded-full font-medium">
-                        <Flame className="w-4 h-4" />
-                        {challenge.daysLeft}d
-                      </span>
-                    </div>
-                    
-                    {/* Progress bar */}
-                    <div className="mt-3">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-muted-foreground">Progress</span>
-                        <span className="font-bold text-foreground">
-                          {typeof challenge.progress === 'number' && challenge.progress % 1 !== 0 
-                            ? `£${challenge.progress.toFixed(2)}` 
-                            : challenge.progress} / {challenge.target}
-                        </span>
+          {challenges.length > 0 ? (
+            <div className="space-y-4">
+              {challenges.map((challenge, index) => {
+                const color = challengeColors[challenge.type] || "from-primary to-teal-400";
+                const emoji = challengeEmojis[challenge.type] || "🎯";
+                const progress = Number(challenge.current_value) || 0;
+                const target = Number(challenge.target_value) || 1;
+                const daysLeft = challenge.end_date 
+                  ? Math.max(0, Math.ceil((new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+                  : challenge.target_days ?? 7;
+
+                return (
+                  <Card 
+                    key={challenge.id} 
+                    className={cn(
+                      "p-5 border-2 overflow-hidden relative animate-fade-in",
+                      progress >= target 
+                        ? "border-success bg-success-light" 
+                        : "border-primary/20"
+                    )}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* Emoji */}
+                      <div className={cn(
+                        "w-14 h-14 rounded-2xl flex items-center justify-center text-3xl bg-gradient-to-br shadow-lg",
+                        color
+                      )}>
+                        {emoji}
                       </div>
-                      <div className="h-4 bg-secondary rounded-full overflow-hidden">
-                        <div 
-                          className={cn(
-                            "h-full rounded-full transition-all duration-700 bg-gradient-to-r",
-                            challenge.color
-                          )}
-                          style={{ width: `${(challenge.progress / challenge.target) * 100}%` }}
-                        />
+                      
+                      {/* Content */}
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-bold text-foreground text-lg">{challenge.title}</h3>
+                          <span className="flex items-center gap-1 text-sm bg-accent/10 text-accent px-2 py-1 rounded-full font-medium">
+                            <Flame className="w-4 h-4" />
+                            {daysLeft}d
+                          </span>
+                        </div>
+                        
+                        {/* Progress bar */}
+                        <div className="mt-3">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-muted-foreground">Progress</span>
+                            <span className="font-bold text-foreground">
+                              {challenge.type === "snack-tracker" || challenge.type === "save-50" 
+                                ? `£${progress.toFixed(2)}` 
+                                : progress} / {challenge.type === "snack-tracker" || challenge.type === "save-50" 
+                                ? `£${target.toFixed(2)}` 
+                                : target}
+                            </span>
+                          </div>
+                          <div className="h-4 bg-secondary rounded-full overflow-hidden">
+                            <div 
+                              className={cn(
+                                "h-full rounded-full transition-all duration-700 bg-gradient-to-r",
+                                color
+                              )}
+                              style={{ width: `${Math.min((progress / target) * 100, 100)}%` }}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <Card className="p-6 text-center text-muted-foreground">
+              <p>No active challenges. Ask your parent to create one!</p>
+            </Card>
+          )}
         </section>
 
         {/* Badges Collection */}
@@ -249,12 +334,12 @@ export default function KidView() {
               <Sparkles className="w-6 h-6 text-badge-gold" />
               <h2 className="text-xl font-bold text-foreground">My Badges</h2>
             </div>
-            <span className="text-sm text-muted-foreground">{kidData.totalBadges}/5 earned</span>
+            <span className="text-sm text-muted-foreground">{totalEarnedBadges}/{allBadgeTypes.length} earned</span>
           </div>
           
           <Card className="p-6">
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
-              {badges.map((badge, index) => (
+              {badgeDisplay.map((badge, index) => (
                 <div 
                   key={badge.type} 
                   className="animate-fade-in"
