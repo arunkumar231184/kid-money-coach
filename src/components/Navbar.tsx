@@ -37,15 +37,15 @@ export function Navbar({ showAuth = true, className }: NavbarProps) {
         
         {/* Desktop navigation */}
         <div className="hidden md:flex items-center gap-6">
-          <Link to="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Features
-          </Link>
-          <Link to="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          </a>
+          <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Pricing
-          </Link>
-          <Link to="#about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          </a>
+          <a href="#about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             About
-          </Link>
+          </a>
         </div>
         
         {/* Auth buttons */}
@@ -97,15 +97,15 @@ export function Navbar({ showAuth = true, className }: NavbarProps) {
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border p-4 animate-fade-in z-50">
           <div className="flex flex-col gap-4">
-            <Link to="#features" className="text-sm font-medium text-foreground py-2">
+            <a href="#features" className="text-sm font-medium text-foreground py-2" onClick={() => setMobileMenuOpen(false)}>
               Features
-            </Link>
-            <Link to="#pricing" className="text-sm font-medium text-foreground py-2">
+            </a>
+            <a href="#pricing" className="text-sm font-medium text-foreground py-2" onClick={() => setMobileMenuOpen(false)}>
               Pricing
-            </Link>
-            <Link to="#about" className="text-sm font-medium text-foreground py-2">
+            </a>
+            <a href="#about" className="text-sm font-medium text-foreground py-2" onClick={() => setMobileMenuOpen(false)}>
               About
-            </Link>
+            </a>
             {showAuth && !loading && (
               <>
                 <hr className="border-border" />
