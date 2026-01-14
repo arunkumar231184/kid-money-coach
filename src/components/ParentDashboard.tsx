@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChallengeCard } from "@/components/ChallengeCard";
@@ -9,9 +10,10 @@ import { AddChildDialog } from "@/components/AddChildDialog";
 import { CreateChallengeDialog } from "@/components/CreateChallengeDialog";
 import { CreateSavingsGoalDialog } from "@/components/CreateSavingsGoalDialog";
 import { SavingsGoalCard } from "@/components/SavingsGoalCard";
+import { UpdateSavingsProgressDialog } from "@/components/UpdateSavingsProgressDialog";
 import { useKids, useDeleteKid } from "@/hooks/useKids";
 import { useActiveChallenges, useDeleteChallenge } from "@/hooks/useChallenges";
-import { useSavingsGoals, useDeleteSavingsGoal } from "@/hooks/useSavingsGoals";
+import { useSavingsGoals, useDeleteSavingsGoal, useUpdateSavingsGoal, SavingsGoal } from "@/hooks/useSavingsGoals";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   User, 
@@ -47,6 +49,12 @@ export function ParentDashboard() {
   const { data: activeChallenges, refetch: refetchChallenges } = useActiveChallenges(selectedKid?.id);
   const { data: savingsGoals, refetch: refetchSavingsGoals } = useSavingsGoals(selectedKid?.id);
   const deleteSavingsGoalMutation = useDeleteSavingsGoal();
+  const updateSavingsGoalMutation = useUpdateSavingsGoal();
+
+  // State for savings progress dialog
+  const [progressDialogOpen, setProgressDialogOpen] = useState(false);
+  const [progressDialogMode, setProgressDialogMode] = useState<"add" | "subtract">("add");
+  const [selectedGoal, setSelectedGoal] = useState<SavingsGoal | null>(null);
 
   const handleSignOut = async () => {
     await signOut();
@@ -82,6 +90,30 @@ export function ParentDashboard() {
       toast.success("Savings goal removed");
     } catch (error: any) {
       toast.error(error.message || "Failed to remove savings goal");
+    }
+  };
+
+  const handleOpenAddProgress = (goal: SavingsGoal) => {
+    setSelectedGoal(goal);
+    setProgressDialogMode("add");
+    setProgressDialogOpen(true);
+  };
+
+  const handleOpenSubtractProgress = (goal: SavingsGoal) => {
+    setSelectedGoal(goal);
+    setProgressDialogMode("subtract");
+    setProgressDialogOpen(true);
+  };
+
+  const handleUpdateProgress = async (goalId: string, newAmount: number) => {
+    try {
+      await updateSavingsGoalMutation.mutateAsync({ id: goalId, current_amount: newAmount });
+      const isGoalReached = selectedGoal && newAmount >= Number(selectedGoal.target_amount);
+      toast.success(isGoalReached ? "🎉 Goal reached! Amazing!" : "Savings updated!");
+      setProgressDialogOpen(false);
+      setSelectedGoal(null);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update savings");
     }
   };
 
@@ -226,6 +258,8 @@ export function ParentDashboard() {
                       key={goal.id}
                       goal={goal}
                       onDelete={handleDeleteSavingsGoal}
+                      onAddProgress={handleOpenAddProgress}
+                      onSubtractProgress={handleOpenSubtractProgress}
                       isDeleting={deleteSavingsGoalMutation.isPending}
                     />
                   ))}
@@ -281,6 +315,16 @@ export function ParentDashboard() {
           </>
         )}
       </main>
+
+      {/* Update Savings Progress Dialog */}
+      <UpdateSavingsProgressDialog
+        goal={selectedGoal}
+        mode={progressDialogMode}
+        open={progressDialogOpen}
+        onOpenChange={setProgressDialogOpen}
+        onUpdate={handleUpdateProgress}
+        isUpdating={updateSavingsGoalMutation.isPending}
+      />
     </div>
   );
 }
