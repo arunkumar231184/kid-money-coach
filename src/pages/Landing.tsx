@@ -261,6 +261,51 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* About */}
+      <section id="about" className="py-16 md:py-24 bg-secondary/30">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-display-sm md:text-display-md font-bold text-foreground mb-6">
+                Built by parents, for parents
+              </h2>
+              <div className="space-y-4 text-muted-foreground">
+                <p>
+                  We started YouthMentor because we struggled to have meaningful conversations about money with our own kids. 
+                  Watching them spend without understanding the value of what they had, we knew there had to be a better way.
+                </p>
+                <p>
+                  Our mission is simple: make financial education natural, fun, and part of everyday life. 
+                  No boring lectures, no complicated spreadsheets — just real insights from real spending that spark real conversations.
+                </p>
+                <p>
+                  Based in the UK, we're a small team of parents, educators, and fintech professionals committed to helping 
+                  the next generation develop healthy money habits that last a lifetime.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Card className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">500+</p>
+                <p className="text-sm text-muted-foreground">UK Families</p>
+              </Card>
+              <Card className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">10k+</p>
+                <p className="text-sm text-muted-foreground">Transactions Tracked</p>
+              </Card>
+              <Card className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">95%</p>
+                <p className="text-sm text-muted-foreground">Parent Satisfaction</p>
+              </Card>
+              <Card className="p-6 text-center">
+                <p className="text-4xl font-bold text-primary mb-2">£50k+</p>
+                <p className="text-sm text-muted-foreground">Savings Goals Reached</p>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
       
       {/* CTA */}
       <section className="py-16 md:py-24 hero-gradient">
@@ -296,17 +341,17 @@ export default function Landing() {
             <div>
               <h4 className="font-semibold text-foreground mb-3">Product</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Security</a></li>
+                <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
+                <li><a href="#about" className="hover:text-foreground transition-colors">About Us</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold text-foreground mb-3">Company</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
+                <li><a href="#about" className="hover:text-foreground transition-colors">About</a></li>
+                <li><a href="mailto:hello@youthmentor.com" className="hover:text-foreground transition-colors">Contact</a></li>
+                <li><a href="mailto:careers@youthmentor.com" className="hover:text-foreground transition-colors">Careers</a></li>
               </ul>
             </div>
             <div>
