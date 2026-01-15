@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Plus, Minus } from "lucide-react";
 import type { SavingsGoal } from "@/hooks/useSavingsGoals";
+import { celebrateGoalReached } from "@/lib/confetti";
 
 interface UpdateSavingsProgressDialogProps {
   goal: SavingsGoal | null;
@@ -37,6 +38,7 @@ export function UpdateSavingsProgressDialog({
     if (!goal || !amount) return;
 
     const currentAmount = Number(goal.current_amount) || 0;
+    const targetAmount = Number(goal.target_amount) || 0;
     const changeAmount = parseFloat(amount);
     
     if (isNaN(changeAmount) || changeAmount <= 0) return;
@@ -44,6 +46,15 @@ export function UpdateSavingsProgressDialog({
     const newAmount = mode === "add" 
       ? currentAmount + changeAmount 
       : Math.max(0, currentAmount - changeAmount);
+
+    // Check if this update completes the goal
+    const wasNotComplete = currentAmount < targetAmount;
+    const willBeComplete = newAmount >= targetAmount;
+    
+    if (mode === "add" && wasNotComplete && willBeComplete) {
+      // Trigger confetti celebration!
+      setTimeout(() => celebrateGoalReached(), 300);
+    }
 
     onUpdate(goal.id, newAmount);
     setAmount("");
