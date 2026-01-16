@@ -1,6 +1,8 @@
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Trophy, Flame, Target, Coins, ShoppingBag } from "lucide-react";
+import { Trophy, Flame, Target, Coins, ShoppingBag, Check } from "lucide-react";
+import { celebrateChallengeComplete } from "@/lib/confetti";
 
 export type ChallengeType = "snack-tracker" | "save-allowance" | "no-impulse" | "round-ups" | "goal";
 export type ChallengeStatus = "active" | "completed" | "upcoming" | "failed" | "paused";
@@ -14,6 +16,7 @@ interface ChallengeCardProps {
   status: ChallengeStatus;
   daysLeft?: number;
   className?: string;
+  onMarkComplete?: () => void;
 }
 
 const challengeConfig: Record<ChallengeType, { icon: typeof Trophy; color: string; bgColor: string }> = {
@@ -32,12 +35,19 @@ export function ChallengeCard({
   target, 
   status, 
   daysLeft,
-  className 
+  className,
+  onMarkComplete
 }: ChallengeCardProps) {
   const config = challengeConfig[type];
   const Icon = config.icon;
   const percentage = Math.min((progress / target) * 100, 100);
   const isCompleted = status === "completed";
+  const isActive = status === "active";
+
+  const handleMarkComplete = () => {
+    celebrateChallengeComplete();
+    onMarkComplete?.();
+  };
   
   return (
     <Card className={cn(
@@ -92,6 +102,19 @@ export function ChallengeCard({
               />
             </div>
           </div>
+
+          {/* Mark Complete Button */}
+          {isActive && onMarkComplete && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="mt-3 w-full gap-2 border-success text-success hover:bg-success hover:text-white"
+              onClick={handleMarkComplete}
+            >
+              <Check className="w-4 h-4" />
+              Mark Complete
+            </Button>
+          )}
         </div>
       </div>
     </Card>

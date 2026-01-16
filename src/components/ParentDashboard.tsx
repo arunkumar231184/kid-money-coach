@@ -12,7 +12,7 @@ import { CreateSavingsGoalDialog } from "@/components/CreateSavingsGoalDialog";
 import { SavingsGoalCard } from "@/components/SavingsGoalCard";
 import { UpdateSavingsProgressDialog } from "@/components/UpdateSavingsProgressDialog";
 import { useKids, useDeleteKid } from "@/hooks/useKids";
-import { useActiveChallenges, useDeleteChallenge } from "@/hooks/useChallenges";
+import { useActiveChallenges, useDeleteChallenge, useUpdateChallenge } from "@/hooks/useChallenges";
 import { useSavingsGoals, useDeleteSavingsGoal, useUpdateSavingsGoal, SavingsGoal } from "@/hooks/useSavingsGoals";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
@@ -44,6 +44,7 @@ export function ParentDashboard() {
   const { data: kids, isLoading, refetch } = useKids();
   const deleteKidMutation = useDeleteKid();
   const deleteChallengesMutation = useDeleteChallenge();
+  const updateChallengeMutation = useUpdateChallenge();
 
   const selectedKid = kids?.[0]; // For now, show first kid's data
   const { data: activeChallenges, refetch: refetchChallenges } = useActiveChallenges(selectedKid?.id);
@@ -81,6 +82,19 @@ export function ParentDashboard() {
 
   const handleSavingsGoalCreated = () => {
     refetchSavingsGoals();
+  };
+
+  const handleMarkChallengeComplete = async (challengeId: string) => {
+    try {
+      await updateChallengeMutation.mutateAsync({ 
+        id: challengeId, 
+        status: "completed",
+        current_value: undefined // Keep current value
+      });
+      toast.success("🎉 Challenge completed! Great job!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to complete challenge");
+    }
   };
 
   const handleDeleteSavingsGoal = async (goalId: string) => {
@@ -218,6 +232,7 @@ export function ParentDashboard() {
                         target={Number(challenge.target_value)}
                         status={(challenge.status as ChallengeStatus) || "active"}
                         daysLeft={daysLeft}
+                        onMarkComplete={() => handleMarkChallengeComplete(challenge.id)}
                       />
                     );
                   })}
