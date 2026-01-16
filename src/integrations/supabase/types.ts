@@ -52,6 +52,65 @@ export type Database = {
           },
         ]
       }
+      bank_connections: {
+        Row: {
+          access_token: string
+          account_id: string | null
+          account_name: string | null
+          bank_name: string | null
+          connected_at: string
+          created_at: string
+          id: string
+          kid_id: string
+          last_synced_at: string | null
+          provider: string
+          refresh_token: string | null
+          status: string
+          token_expires_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          account_id?: string | null
+          account_name?: string | null
+          bank_name?: string | null
+          connected_at?: string
+          created_at?: string
+          id?: string
+          kid_id: string
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          account_id?: string | null
+          account_name?: string | null
+          bank_name?: string | null
+          connected_at?: string
+          created_at?: string
+          id?: string
+          kid_id?: string
+          last_synced_at?: string | null
+          provider?: string
+          refresh_token?: string | null
+          status?: string
+          token_expires_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_connections_kid_id_fkey"
+            columns: ["kid_id"]
+            isOneToOne: false
+            referencedRelation: "kids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenges: {
         Row: {
           created_at: string
@@ -245,9 +304,11 @@ export type Database = {
       transactions: {
         Row: {
           amount: number
+          bank_connection_id: string | null
           category: string
           created_at: string
           description: string | null
+          external_id: string | null
           id: string
           is_income: boolean | null
           kid_id: string
@@ -256,9 +317,11 @@ export type Database = {
         }
         Insert: {
           amount: number
+          bank_connection_id?: string | null
           category: string
           created_at?: string
           description?: string | null
+          external_id?: string | null
           id?: string
           is_income?: boolean | null
           kid_id: string
@@ -267,9 +330,11 @@ export type Database = {
         }
         Update: {
           amount?: number
+          bank_connection_id?: string | null
           category?: string
           created_at?: string
           description?: string | null
+          external_id?: string | null
           id?: string
           is_income?: boolean | null
           kid_id?: string
@@ -277,6 +342,13 @@ export type Database = {
           transaction_date?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "transactions_bank_connection_id_fkey"
+            columns: ["bank_connection_id"]
+            isOneToOne: false
+            referencedRelation: "bank_connections"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transactions_kid_id_fkey"
             columns: ["kid_id"]

@@ -11,9 +11,13 @@ import { CreateChallengeDialog } from "@/components/CreateChallengeDialog";
 import { CreateSavingsGoalDialog } from "@/components/CreateSavingsGoalDialog";
 import { SavingsGoalCard } from "@/components/SavingsGoalCard";
 import { UpdateSavingsProgressDialog } from "@/components/UpdateSavingsProgressDialog";
+import { ConnectBankDialog } from "@/components/ConnectBankDialog";
+import { AddTransactionDialog } from "@/components/AddTransactionDialog";
+import { TransactionList } from "@/components/TransactionList";
 import { useKids, useDeleteKid } from "@/hooks/useKids";
 import { useActiveChallenges, useDeleteChallenge, useUpdateChallenge } from "@/hooks/useChallenges";
 import { useSavingsGoals, useDeleteSavingsGoal, useUpdateSavingsGoal, SavingsGoal } from "@/hooks/useSavingsGoals";
+import { useTransactions } from "@/hooks/useTransactions";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   User, 
@@ -21,7 +25,8 @@ import {
   Settings, 
   Plus,
   Loader2,
-  LogOut
+  LogOut,
+  Landmark
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -49,6 +54,7 @@ export function ParentDashboard() {
   const selectedKid = kids?.[0]; // For now, show first kid's data
   const { data: activeChallenges, refetch: refetchChallenges } = useActiveChallenges(selectedKid?.id);
   const { data: savingsGoals, refetch: refetchSavingsGoals } = useSavingsGoals(selectedKid?.id);
+  const { data: transactions, refetch: refetchTransactions } = useTransactions(selectedKid?.id, 10);
   const deleteSavingsGoalMutation = useDeleteSavingsGoal();
   const updateSavingsGoalMutation = useUpdateSavingsGoal();
 
@@ -309,23 +315,71 @@ export function ParentDashboard() {
               </div>
             </section>
             
+            {/* Bank Connection */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Bank Connection</h3>
+                <ConnectBankDialog kid={selectedKid} />
+              </div>
+              {!selectedKid.bank_account_connected && (
+                <Card className="p-6 border-dashed border-2">
+                  <div className="text-center space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                      <Landmark className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Connect {selectedKid.name}'s bank account</p>
+                      <p className="text-sm text-muted-foreground">
+                        Automatically import transactions via Open Banking
+                      </p>
+                    </div>
+                    <ConnectBankDialog 
+                      kid={selectedKid}
+                      trigger={
+                        <Button className="gap-2">
+                          <Landmark className="w-4 h-4" />
+                          Connect Bank
+                        </Button>
+                      }
+                    />
+                  </div>
+                </Card>
+              )}
+            </section>
+
             {/* Recent transactions */}
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-foreground">Recent Transactions</h3>
-                <Button variant="ghost" size="sm" className="text-primary">
-                  View all
-                </Button>
+                <div className="flex gap-2">
+                  <AddTransactionDialog 
+                    kid={selectedKid} 
+                    onTransactionAdded={refetchTransactions}
+                  />
+                  <Button variant="ghost" size="sm" className="text-primary">
+                    View all
+                  </Button>
+                </div>
               </div>
-              <Card className="p-6 text-center border-dashed border-2">
-                <p className="text-muted-foreground">
-                  No transactions yet. Connect a bank account or add transactions manually.
-                </p>
-                <Button variant="outline" className="mt-4">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Transaction
-                </Button>
-              </Card>
+              {transactions && transactions.length > 0 ? (
+                <TransactionList transactions={transactions} />
+              ) : (
+                <Card className="p-6 text-center border-dashed border-2">
+                  <p className="text-muted-foreground">
+                    No transactions yet. Connect a bank account or add transactions manually.
+                  </p>
+                  <AddTransactionDialog 
+                    kid={selectedKid}
+                    onTransactionAdded={refetchTransactions}
+                    trigger={
+                      <Button variant="outline" className="mt-4">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Transaction
+                      </Button>
+                    }
+                  />
+                </Card>
+              )}
             </section>
           </>
         )}
