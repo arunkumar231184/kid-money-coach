@@ -14,6 +14,7 @@ import { UpdateSavingsProgressDialog } from "@/components/UpdateSavingsProgressD
 import { ConnectBankDialog } from "@/components/ConnectBankDialog";
 import { AddTransactionDialog } from "@/components/AddTransactionDialog";
 import { TransactionList } from "@/components/TransactionList";
+import { SpendingInsights } from "@/components/SpendingInsights";
 import { useKids, useDeleteKid } from "@/hooks/useKids";
 import { useActiveChallenges, useDeleteChallenge, useUpdateChallenge } from "@/hooks/useChallenges";
 import { useSavingsGoals, useDeleteSavingsGoal, useUpdateSavingsGoal, SavingsGoal } from "@/hooks/useSavingsGoals";
@@ -54,7 +55,7 @@ export function ParentDashboard() {
   const selectedKid = kids?.[0]; // For now, show first kid's data
   const { data: activeChallenges, refetch: refetchChallenges } = useActiveChallenges(selectedKid?.id);
   const { data: savingsGoals, refetch: refetchSavingsGoals } = useSavingsGoals(selectedKid?.id);
-  const { data: transactions, refetch: refetchTransactions } = useTransactions(selectedKid?.id, 10);
+  const { data: transactions, refetch: refetchTransactions } = useTransactions(selectedKid?.id, 100);
   const deleteSavingsGoalMutation = useDeleteSavingsGoal();
   const updateSavingsGoalMutation = useUpdateSavingsGoal();
 
@@ -347,6 +348,15 @@ export function ParentDashboard() {
               )}
             </section>
 
+            {/* Spending Insights */}
+            <section>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Spending Insights</h3>
+              <SpendingInsights 
+                transactions={transactions || []} 
+                kidName={selectedKid.name} 
+              />
+            </section>
+
             {/* Recent transactions */}
             <section>
               <div className="flex items-center justify-between mb-4">
@@ -362,7 +372,7 @@ export function ParentDashboard() {
                 </div>
               </div>
               {transactions && transactions.length > 0 ? (
-                <TransactionList transactions={transactions} />
+                <TransactionList transactions={transactions.slice(0, 10)} />
               ) : (
                 <Card className="p-6 text-center border-dashed border-2">
                   <p className="text-muted-foreground">
