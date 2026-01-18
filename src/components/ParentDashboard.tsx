@@ -15,10 +15,13 @@ import { ConnectBankDialog } from "@/components/ConnectBankDialog";
 import { AddTransactionDialog } from "@/components/AddTransactionDialog";
 import { TransactionList } from "@/components/TransactionList";
 import { SpendingInsights } from "@/components/SpendingInsights";
+import { SpendingLimitsDialog } from "@/components/SpendingLimitsDialog";
+import { SpendingAlerts } from "@/components/SpendingAlerts";
 import { useKids, useDeleteKid } from "@/hooks/useKids";
 import { useActiveChallenges, useDeleteChallenge, useUpdateChallenge } from "@/hooks/useChallenges";
 import { useSavingsGoals, useDeleteSavingsGoal, useUpdateSavingsGoal, SavingsGoal } from "@/hooks/useSavingsGoals";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useSpendingLimits, useSpendingAlerts } from "@/hooks/useSpendingLimits";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   User, 
@@ -56,8 +59,12 @@ export function ParentDashboard() {
   const { data: activeChallenges, refetch: refetchChallenges } = useActiveChallenges(selectedKid?.id);
   const { data: savingsGoals, refetch: refetchSavingsGoals } = useSavingsGoals(selectedKid?.id);
   const { data: transactions, refetch: refetchTransactions } = useTransactions(selectedKid?.id, 100);
+  const { data: spendingLimits = [] } = useSpendingLimits(selectedKid?.id);
   const deleteSavingsGoalMutation = useDeleteSavingsGoal();
   const updateSavingsGoalMutation = useUpdateSavingsGoal();
+
+  // Calculate spending alerts based on limits and transactions
+  const spendingAlerts = useSpendingAlerts(spendingLimits, transactions || []);
 
   // State for savings progress dialog
   const [progressDialogOpen, setProgressDialogOpen] = useState(false);
@@ -201,6 +208,14 @@ export function ParentDashboard() {
         {/* Show detailed sections only if there are kids */}
         {selectedKid && (
           <>
+            {/* Spending Alerts */}
+            {spendingAlerts.length > 0 && (
+              <section>
+                <h3 className="text-lg font-semibold text-foreground mb-4">⚠️ Spending Alerts</h3>
+                <SpendingAlerts alerts={spendingAlerts} />
+              </section>
+            )}
+
             {/* Weekly insight */}
             <InsightCard 
               title="Weekly Insight"
@@ -350,7 +365,10 @@ export function ParentDashboard() {
 
             {/* Spending Insights */}
             <section>
-              <h3 className="text-lg font-semibold text-foreground mb-4">Spending Insights</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Spending Insights</h3>
+                <SpendingLimitsDialog kid={selectedKid} />
+              </div>
               <SpendingInsights 
                 transactions={transactions || []} 
                 kidName={selectedKid.name} 
