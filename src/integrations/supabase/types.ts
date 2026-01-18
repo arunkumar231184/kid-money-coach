@@ -301,6 +301,47 @@ export type Database = {
           },
         ]
       }
+      spending_limits: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          kid_id: string
+          limit_amount: number
+          period: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          kid_id: string
+          limit_amount: number
+          period?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          kid_id?: string
+          limit_amount?: number
+          period?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spending_limits_kid_id_fkey"
+            columns: ["kid_id"]
+            isOneToOne: false
+            referencedRelation: "kids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number
