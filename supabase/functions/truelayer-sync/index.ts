@@ -121,14 +121,17 @@ Deno.serve(async (req) => {
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
     const body = await req.json();
-    const { connectionId, kidId } = body;
+    const { connectionId, kidId, syncAll } = body;
 
-    if (!connectionId && !kidId) {
-      return new Response(JSON.stringify({ error: "Missing connectionId or kidId" }), {
+    // For scheduled cron jobs, sync all active connections
+    if (!connectionId && !kidId && !syncAll) {
+      return new Response(JSON.stringify({ error: "Missing connectionId, kidId, or syncAll" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    console.log("Starting sync:", syncAll ? "ALL connections" : connectionId ? `connection ${connectionId}` : `kid ${kidId}`);
 
     // Get connection(s) to sync
     let query = supabase
@@ -141,15 +144,27 @@ Deno.serve(async (req) => {
     } else if (kidId) {
       query = query.eq("kid_id", kidId);
     }
+    // If syncAll is true, we don't add any filter - sync all active connections
 
     const { data: connections, error: fetchError } = await query;
 
-    if (fetchError || !connections || connections.length === 0) {
-      return new Response(JSON.stringify({ error: "No active connections found" }), {
-        status: 404,
+    if (fetchError) {
+      console.error("Failed to fetch connections:", fetchError);
+      return new Response(JSON.stringify({ error: "Failed to fetch connections" }), {
+        status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    if (!connections || connections.length === 0) {
+      console.log("No active connections found to sync");
+      return new Response(JSON.stringify({ message: "No active connections found", totalSynced: 0 }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    console.log(`Found ${connections.length} active connection(s) to sync`);
 
     let totalSynced = 0;
     const results = [];
