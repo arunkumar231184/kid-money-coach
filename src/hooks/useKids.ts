@@ -15,11 +15,11 @@ export function useKids() {
 
       const { data, error } = await supabase
         .from("kids")
-        .select("*")
+        .select("*, pin_hash")
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return data as Kid[];
+      return data as (Kid & { pin_hash: string | null })[];
     },
     enabled: !!user,
   });

@@ -189,6 +189,7 @@ export type Database = {
           level: number | null
           name: string
           parent_id: string
+          pin_hash: string | null
           total_badges: number | null
           total_saved: number | null
           updated_at: string
@@ -206,6 +207,7 @@ export type Database = {
           level?: number | null
           name: string
           parent_id: string
+          pin_hash?: string | null
           total_badges?: number | null
           total_saved?: number | null
           updated_at?: string
@@ -223,6 +225,7 @@ export type Database = {
           level?: number | null
           name?: string
           parent_id?: string
+          pin_hash?: string | null
           total_badges?: number | null
           total_saved?: number | null
           updated_at?: string
@@ -442,7 +445,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      set_kid_pin: {
+        Args: { p_kid_id: string; p_pin: string }
+        Returns: boolean
+      }
       user_owns_kid: { Args: { kid_id: string }; Returns: boolean }
+      verify_kid_pin: {
+        Args: { p_kid_id: string; p_pin: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
