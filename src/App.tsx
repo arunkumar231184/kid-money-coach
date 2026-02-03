@@ -9,6 +9,7 @@ import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import KidView from "./pages/KidView";
 import KidLogin from "./pages/KidLogin";
+import LoginSelect from "./pages/LoginSelect";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -27,6 +28,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<LoginSelect />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/kid-login" element={<KidLogin />} />
