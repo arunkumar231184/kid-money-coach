@@ -271,6 +271,41 @@ export type Database = {
           },
         ]
       }
+      pin_reset_requests: {
+        Row: {
+          created_at: string
+          id: string
+          kid_id: string
+          requested_at: string
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kid_id: string
+          requested_at?: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kid_id?: string
+          requested_at?: string
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pin_reset_requests_kid_id_fkey"
+            columns: ["kid_id"]
+            isOneToOne: false
+            referencedRelation: "kids"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

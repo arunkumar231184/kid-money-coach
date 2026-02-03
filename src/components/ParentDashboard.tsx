@@ -17,6 +17,8 @@ import { TransactionList } from "@/components/TransactionList";
 import { SpendingInsights } from "@/components/SpendingInsights";
 import { SpendingLimitsDialog } from "@/components/SpendingLimitsDialog";
 import { SpendingAlerts } from "@/components/SpendingAlerts";
+import { PinResetAlerts } from "@/components/PinResetAlerts";
+import { SetPinDialog } from "@/components/SetPinDialog";
 import { useKids, useDeleteKid } from "@/hooks/useKids";
 import { useActiveChallenges, useDeleteChallenge, useUpdateChallenge } from "@/hooks/useChallenges";
 import { useSavingsGoals, useDeleteSavingsGoal, useUpdateSavingsGoal, SavingsGoal } from "@/hooks/useSavingsGoals";
@@ -70,6 +72,15 @@ export function ParentDashboard() {
   const [progressDialogOpen, setProgressDialogOpen] = useState(false);
   const [progressDialogMode, setProgressDialogMode] = useState<"add" | "subtract">("add");
   const [selectedGoal, setSelectedGoal] = useState<SavingsGoal | null>(null);
+
+  // State for PIN reset dialog
+  const [pinResetDialogOpen, setPinResetDialogOpen] = useState(false);
+  const [pinResetKid, setPinResetKid] = useState<{ id: string; name: string } | null>(null);
+
+  const handleResetPin = (kidId: string, kidName: string) => {
+    setPinResetKid({ id: kidId, name: kidName });
+    setPinResetDialogOpen(true);
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -176,6 +187,9 @@ export function ParentDashboard() {
       </header>
       
       <main className="container mx-auto px-4 py-6 space-y-6">
+        {/* PIN Reset Alerts */}
+        <PinResetAlerts onResetPin={handleResetPin} />
+
         {/* Children section */}
         <section>
           <div className="flex items-center justify-between mb-4">
@@ -422,6 +436,17 @@ export function ParentDashboard() {
         onUpdate={handleUpdateProgress}
         isUpdating={updateSavingsGoalMutation.isPending}
       />
+
+      {/* PIN Reset Dialog */}
+      {pinResetKid && (
+        <SetPinDialog
+          kidId={pinResetKid.id}
+          kidName={pinResetKid.name}
+          hasExistingPin={true}
+          open={pinResetDialogOpen}
+          onOpenChange={setPinResetDialogOpen}
+        />
+      )}
     </div>
   );
 }

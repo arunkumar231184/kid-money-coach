@@ -5,8 +5,9 @@ import { useKidAuth } from "@/contexts/KidAuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, Loader2, User, Lock, Delete } from "lucide-react";
+import { ArrowLeft, Loader2, User, Lock, Delete, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ForgotPinDialog } from "@/components/ForgotPinDialog";
 
 interface KidOption {
   id: string;
@@ -23,6 +24,7 @@ export default function KidLogin() {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [verifying, setVerifying] = useState(false);
+  const [forgotPinOpen, setForgotPinOpen] = useState(false);
 
   // Redirect if already logged in as kid
   useEffect(() => {
@@ -225,8 +227,31 @@ export default function KidLogin() {
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             )}
+
+            {/* Forgot PIN */}
+            <div className="pt-2 border-t">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-muted-foreground"
+                onClick={() => setForgotPinOpen(true)}
+              >
+                <HelpCircle className="h-4 w-4 mr-2" />
+                Forgot PIN?
+              </Button>
+            </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Forgot PIN Dialog */}
+      {selectedKid && (
+        <ForgotPinDialog
+          kidId={selectedKid.id}
+          kidName={selectedKid.name}
+          open={forgotPinOpen}
+          onOpenChange={setForgotPinOpen}
+        />
       )}
     </div>
   );
