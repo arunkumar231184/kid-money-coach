@@ -65,7 +65,7 @@ export function Navbar({ showAuth = true, className }: NavbarProps) {
               </>
             ) : (
               <>
-                <Link to="/auth">
+                <Link to="/login">
                   <Button variant="ghost" size="sm">
                     Log in
                   </Button>
@@ -121,7 +121,7 @@ export function Navbar({ showAuth = true, className }: NavbarProps) {
                   </>
                 ) : (
                   <>
-                    <Link to="/auth">
+                    <Link to="/login">
                       <Button variant="outline" className="w-full">Log in</Button>
                     </Link>
                     <Link to="/auth">
