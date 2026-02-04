@@ -142,10 +142,10 @@ export default function KidView() {
   const recentTransactions = transactions.slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary-light via-background to-accent-light pb-safe">
-      {/* Header - Mobile optimized */}
-      <header className="sticky top-0 z-40 backdrop-blur-lg bg-white/80 border-b border-border safe-top">
-        <div className="px-4 py-3 flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-primary-light via-background to-accent-light pb-8">
+      {/* Header - Responsive */}
+      <header className="sticky top-0 z-40 backdrop-blur-lg bg-white/80 border-b border-border">
+        <div className="px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between max-w-6xl mx-auto">
           <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-5 h-5" />
             <span className="text-sm font-medium">Back</span>
@@ -157,28 +157,28 @@ export default function KidView() {
         </div>
       </header>
 
-      <main className="px-4 py-6 space-y-6 max-w-lg mx-auto">
-        {/* Welcome Card - Compact for mobile */}
-        <Card className="p-5 bg-gradient-to-br from-primary via-primary to-primary-dark text-primary-foreground overflow-hidden relative">
+      <main className="px-4 md:px-6 lg:px-8 py-6 space-y-6 max-w-6xl mx-auto">
+        {/* Welcome Card - Responsive */}
+        <Card className="p-5 md:p-6 bg-gradient-to-br from-primary via-primary to-primary-dark text-primary-foreground overflow-hidden relative">
           <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
           
           <div className="relative z-10 flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-4xl shadow-lg">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-4xl md:text-5xl shadow-lg">
               {avatarEmoji}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold truncate">Hey {kid.name}! 👋</h1>
+              <h1 className="text-xl md:text-2xl font-bold truncate">Hey {kid.name}! 👋</h1>
               
               {/* Level progress - inline */}
-              <div className="mt-2">
-                <div className="flex items-center justify-between text-xs mb-1">
+              <div className="mt-2 max-w-xs">
+                <div className="flex items-center justify-between text-xs md:text-sm mb-1">
                   <span className="flex items-center gap-1">
                     <Star className="w-3 h-3 fill-current" />
                     Level {kid.level ?? 1}
                   </span>
                   <span>{kid.xp_points ?? 0}/{xpToNext} XP</span>
                 </div>
-                <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                <div className="h-2 md:h-3 bg-white/20 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-badge-gold to-yellow-300 rounded-full transition-all duration-700"
                     style={{ width: `${xpPercentage}%` }}
@@ -189,80 +189,81 @@ export default function KidView() {
           </div>
         </Card>
 
-        {/* Quick Stats - Horizontal scroll on mobile */}
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x">
-          <Card className="p-4 text-center bg-success-light border-success/20 min-w-[100px] snap-start shrink-0">
+        {/* Quick Stats - Responsive grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <Card className="p-4 text-center bg-success-light border-success/20">
             <div className="text-2xl mb-1">🏆</div>
-            <p className="text-xl font-bold text-success">{kid.total_badges ?? 0}</p>
+            <p className="text-xl md:text-2xl font-bold text-success">{kid.total_badges ?? 0}</p>
             <p className="text-xs text-muted-foreground">Badges</p>
           </Card>
-          <Card className="p-4 text-center bg-accent-light border-accent/20 min-w-[100px] snap-start shrink-0">
+          <Card className="p-4 text-center bg-accent-light border-accent/20">
             <div className="text-2xl mb-1">🔥</div>
-            <p className="text-xl font-bold text-accent">{kid.current_streak ?? 0}</p>
+            <p className="text-xl md:text-2xl font-bold text-accent">{kid.current_streak ?? 0}</p>
             <p className="text-xs text-muted-foreground">Streak</p>
           </Card>
-          <Card className="p-4 text-center bg-primary-light border-primary/20 min-w-[100px] snap-start shrink-0">
+          <Card className="p-4 text-center bg-primary-light border-primary/20">
             <div className="text-2xl mb-1">⭐</div>
-            <p className="text-xl font-bold text-primary">{kid.level ?? 1}</p>
+            <p className="text-xl md:text-2xl font-bold text-primary">{kid.level ?? 1}</p>
             <p className="text-xs text-muted-foreground">Level</p>
           </Card>
-          <Card className="p-4 text-center bg-warning-light border-warning/20 min-w-[100px] snap-start shrink-0">
+          <Card className="p-4 text-center bg-warning-light border-warning/20">
             <div className="text-2xl mb-1">💷</div>
-            <p className="text-xl font-bold text-warning-foreground">£{spendingInsights.weeklyStats.totalSpent.toFixed(0)}</p>
+            <p className="text-xl md:text-2xl font-bold text-warning-foreground">£{spendingInsights.weeklyStats.totalSpent.toFixed(0)}</p>
             <p className="text-xs text-muted-foreground">This Week</p>
           </Card>
         </div>
 
-        {/* My Spending - Kid-friendly view */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <Wallet className="w-5 h-5 text-primary" />
-            <h2 className="text-lg font-bold text-foreground">My Spending</h2>
-          </div>
-          
-          <Card className="p-4">
-            {spendingInsights.categoryBreakdown.length > 0 ? (
-              <div className="space-y-3">
-                {spendingInsights.categoryBreakdown.slice(0, 4).map((cat, idx) => (
-                  <div key={cat.category} className="flex items-center gap-3">
-                    <span className="text-2xl">{cat.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-medium text-sm text-foreground">{cat.label}</span>
-                        <span className="font-semibold text-foreground">£{cat.amount.toFixed(2)}</span>
-                      </div>
-                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                        <div 
-                          className="h-full rounded-full transition-all"
-                          style={{ 
-                            width: `${cat.percentage}%`,
-                            backgroundColor: cat.color 
-                          }}
-                        />
+        {/* Two-column layout for Spending + Transactions on larger screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* My Spending - Kid-friendly view */}
+          <section>
+            <div className="flex items-center gap-2 mb-3">
+              <Wallet className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-bold text-foreground">My Spending</h2>
+            </div>
+            
+            <Card className="p-4 h-full">
+              {spendingInsights.categoryBreakdown.length > 0 ? (
+                <div className="space-y-3">
+                  {spendingInsights.categoryBreakdown.slice(0, 4).map((cat, idx) => (
+                    <div key={cat.category} className="flex items-center gap-3">
+                      <span className="text-2xl">{cat.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-medium text-sm text-foreground">{cat.label}</span>
+                          <span className="font-semibold text-foreground">£{cat.amount.toFixed(2)}</span>
+                        </div>
+                        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all"
+                            style={{ 
+                              width: `${cat.percentage}%`,
+                              backgroundColor: cat.color 
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-                
-                {/* Insight tip for kids */}
-                {spendingInsights.insights[0] && (
-                  <div className="mt-4 p-3 bg-primary-light rounded-lg">
-                    <p className="text-sm font-medium text-foreground">
-                      💡 {spendingInsights.insights[0].message}
-                    </p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-center text-muted-foreground py-4">
-                No spending recorded yet!
-              </p>
-            )}
-          </Card>
-        </section>
+                  ))}
+                  
+                  {/* Insight tip for kids */}
+                  {spendingInsights.insights[0] && (
+                    <div className="mt-4 p-3 bg-primary-light rounded-lg">
+                      <p className="text-sm font-medium text-foreground">
+                        💡 {spendingInsights.insights[0].message}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground py-4">
+                  No spending recorded yet!
+                </p>
+              )}
+            </Card>
+          </section>
 
-        {/* Recent Transactions - Compact list */}
-        {recentTransactions.length > 0 && (
+          {/* Recent Transactions - Compact list */}
           <section>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -272,179 +273,182 @@ export default function KidView() {
               <span className="text-xs text-muted-foreground">{transactions.length} total</span>
             </div>
             
-            <Card className="divide-y divide-border">
-              {recentTransactions.map((tx) => (
-                <div key={tx.id} className="p-3 flex items-center gap-3">
-                  <div className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
-                    tx.is_income ? "bg-success-light" : "bg-secondary"
-                  )}>
-                    {tx.is_income ? (
-                      <TrendingUp className="w-5 h-5 text-success" />
-                    ) : (
-                      <TrendingDown className="w-5 h-5 text-muted-foreground" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm text-foreground truncate">{tx.merchant}</p>
-                    <div className="flex items-center gap-2">
-                      <CategoryBadge category={mapCategory(tx.category)} />
-                      <span className="text-xs text-muted-foreground">
-                        {format(new Date(tx.transaction_date), "MMM d")}
-                      </span>
+            {recentTransactions.length > 0 ? (
+              <Card className="divide-y divide-border h-full">
+                {recentTransactions.map((tx) => (
+                  <div key={tx.id} className="p-3 flex items-center gap-3">
+                    <div className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
+                      tx.is_income ? "bg-success-light" : "bg-secondary"
+                    )}>
+                      {tx.is_income ? (
+                        <TrendingUp className="w-5 h-5 text-success" />
+                      ) : (
+                        <TrendingDown className="w-5 h-5 text-muted-foreground" />
+                      )}
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm text-foreground truncate">{tx.merchant}</p>
+                      <div className="flex items-center gap-2">
+                        <CategoryBadge category={mapCategory(tx.category)} />
+                        <span className="text-xs text-muted-foreground">
+                          {format(new Date(tx.transaction_date), "MMM d")}
+                        </span>
+                      </div>
+                    </div>
+                    <span className={cn(
+                      "font-semibold text-sm shrink-0",
+                      tx.is_income ? "text-success" : "text-foreground"
+                    )}>
+                      {tx.is_income ? "+" : "-"}£{Math.abs(tx.amount).toFixed(2)}
+                    </span>
                   </div>
-                  <span className={cn(
-                    "font-semibold text-sm shrink-0",
-                    tx.is_income ? "text-success" : "text-foreground"
-                  )}>
-                    {tx.is_income ? "+" : "-"}£{Math.abs(tx.amount).toFixed(2)}
-                  </span>
-                </div>
-              ))}
-            </Card>
+                ))}
+              </Card>
+            ) : (
+              <Card className="p-5 text-center text-muted-foreground h-full flex items-center justify-center">
+                <p className="text-sm">No transactions yet!</p>
+              </Card>
+            )}
           </section>
-        )}
+        </div>
 
-        {/* Savings Goal */}
-        {primarySavingsGoal ? (
+        {/* Two-column layout for Savings + Challenges on larger screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Savings Goal */}
           <section>
             <div className="flex items-center gap-2 mb-3">
               <PiggyBank className="w-5 h-5 text-success" />
               <h2 className="text-lg font-bold text-foreground">My Savings Goal</h2>
             </div>
             
-            <Card className="p-5 bg-gradient-to-br from-success-light to-emerald-100 border-success/20 relative overflow-hidden">
-              <div className="absolute top-2 right-2 text-5xl opacity-20">
-                {primarySavingsGoal.icon}
-              </div>
-              
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 rounded-xl bg-success/20 flex items-center justify-center text-3xl">
+            {primarySavingsGoal ? (
+              <Card className="p-5 bg-gradient-to-br from-success-light to-emerald-100 border-success/20 relative overflow-hidden h-full">
+                <div className="absolute top-2 right-2 text-5xl opacity-20">
                   {primarySavingsGoal.icon}
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-foreground">{primarySavingsGoal.name}</h3>
-                  <p className="text-xs text-muted-foreground">Keep saving!</p>
-                </div>
-              </div>
-              
-              {/* Progress */}
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="font-bold text-success">£{(primarySavingsGoal.current_amount ?? 0).toFixed(2)}</span>
-                  <span className="text-muted-foreground">£{primarySavingsGoal.target_amount.toFixed(2)}</span>
-                </div>
-                <div className="h-6 bg-white rounded-full overflow-hidden shadow-inner">
-                  <div 
-                    className="h-full bg-gradient-to-r from-success via-emerald-400 to-teal-400 rounded-full flex items-center justify-end pr-2 transition-all duration-1000"
-                    style={{ width: `${Math.max(savingsPercentage, 15)}%` }}
-                  >
-                    <span className="text-xs font-bold text-white">{savingsPercentage.toFixed(0)}%</span>
+                
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-14 h-14 rounded-xl bg-success/20 flex items-center justify-center text-3xl">
+                    {primarySavingsGoal.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-foreground">{primarySavingsGoal.name}</h3>
+                    <p className="text-xs text-muted-foreground">Keep saving!</p>
                   </div>
                 </div>
-                <p className="text-center text-xs text-muted-foreground mt-2">
-                  <span className="font-semibold text-success">
-                    £{(primarySavingsGoal.target_amount - (primarySavingsGoal.current_amount ?? 0)).toFixed(2)}
-                  </span> to go! 💪
-                </p>
-              </div>
-            </Card>
+                
+                {/* Progress */}
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="font-bold text-success">£{(primarySavingsGoal.current_amount ?? 0).toFixed(2)}</span>
+                    <span className="text-muted-foreground">£{primarySavingsGoal.target_amount.toFixed(2)}</span>
+                  </div>
+                  <div className="h-6 bg-white rounded-full overflow-hidden shadow-inner">
+                    <div 
+                      className="h-full bg-gradient-to-r from-success via-emerald-400 to-teal-400 rounded-full flex items-center justify-end pr-2 transition-all duration-1000"
+                      style={{ width: `${Math.max(savingsPercentage, 15)}%` }}
+                    >
+                      <span className="text-xs font-bold text-white">{savingsPercentage.toFixed(0)}%</span>
+                    </div>
+                  </div>
+                  <p className="text-center text-xs text-muted-foreground mt-2">
+                    <span className="font-semibold text-success">
+                      £{(primarySavingsGoal.target_amount - (primarySavingsGoal.current_amount ?? 0)).toFixed(2)}
+                    </span> to go! 💪
+                  </p>
+                </div>
+              </Card>
+            ) : (
+              <Card className="p-5 text-center text-muted-foreground h-full flex flex-col items-center justify-center">
+                <PiggyBank className="w-10 h-10 mx-auto mb-2 text-muted-foreground/50" />
+                <p className="text-sm">No savings goal yet. Ask your parent to help you set one!</p>
+              </Card>
+            )}
           </section>
-        ) : (
+
+          {/* Active Challenges - Compact cards */}
           <section>
             <div className="flex items-center gap-2 mb-3">
-              <Target className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-bold text-foreground">My Savings Goal</h2>
+              <Zap className="w-5 h-5 text-accent" />
+              <h2 className="text-lg font-bold text-foreground">My Challenges</h2>
+              {challenges.length > 0 && (
+                <span className="ml-auto text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full font-medium">
+                  {challenges.length} active
+                </span>
+              )}
             </div>
-            <Card className="p-5 text-center text-muted-foreground">
-              <PiggyBank className="w-10 h-10 mx-auto mb-2 text-muted-foreground/50" />
-              <p className="text-sm">No savings goal yet. Ask your parent to help you set one!</p>
-            </Card>
-          </section>
-        )}
+            
+            {challenges.length > 0 ? (
+              <div className="space-y-3">
+                {challenges.map((challenge, index) => {
+                  const color = challengeColors[challenge.type] || "from-primary to-teal-400";
+                  const emoji = challengeEmojis[challenge.type] || "🎯";
+                  const progress = Number(challenge.current_value) || 0;
+                  const target = Number(challenge.target_value) || 1;
+                  const progressPercent = Math.min((progress / target) * 100, 100);
+                  const daysLeft = challenge.end_date 
+                    ? Math.max(0, Math.ceil((new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+                    : challenge.target_days ?? 7;
 
-        {/* Active Challenges - Compact cards */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="w-5 h-5 text-accent" />
-            <h2 className="text-lg font-bold text-foreground">My Challenges</h2>
-            {challenges.length > 0 && (
-              <span className="ml-auto text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full font-medium">
-                {challenges.length} active
-              </span>
-            )}
-          </div>
-          
-          {challenges.length > 0 ? (
-            <div className="space-y-3">
-              {challenges.map((challenge, index) => {
-                const color = challengeColors[challenge.type] || "from-primary to-teal-400";
-                const emoji = challengeEmojis[challenge.type] || "🎯";
-                const progress = Number(challenge.current_value) || 0;
-                const target = Number(challenge.target_value) || 1;
-                const progressPercent = Math.min((progress / target) * 100, 100);
-                const daysLeft = challenge.end_date 
-                  ? Math.max(0, Math.ceil((new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-                  : challenge.target_days ?? 7;
-
-                return (
-                  <Card 
-                    key={challenge.id} 
-                    className={cn(
-                      "p-4 border-2 overflow-hidden relative animate-fade-in",
-                      progress >= target 
-                        ? "border-success bg-success-light" 
-                        : "border-border"
-                    )}
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br shadow-md shrink-0",
-                        color
-                      )}>
-                        {emoji}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <h3 className="font-bold text-foreground text-sm truncate">{challenge.title}</h3>
-                          <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full font-medium shrink-0">
-                            <Flame className="w-3 h-3" />
-                            {daysLeft}d
-                          </span>
+                  return (
+                    <Card 
+                      key={challenge.id} 
+                      className={cn(
+                        "p-4 border-2 overflow-hidden relative animate-fade-in",
+                        progress >= target 
+                          ? "border-success bg-success-light" 
+                          : "border-border"
+                      )}
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br shadow-md shrink-0",
+                          color
+                        )}>
+                          {emoji}
                         </div>
                         
-                        <div className="mt-2">
-                          <div className="h-3 bg-secondary rounded-full overflow-hidden">
-                            <div 
-                              className={cn(
-                                "h-full rounded-full transition-all duration-700 bg-gradient-to-r",
-                                color
-                              )}
-                              style={{ width: `${progressPercent}%` }}
-                            />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <h3 className="font-bold text-foreground text-sm truncate">{challenge.title}</h3>
+                            <span className="flex items-center gap-1 text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full font-medium shrink-0">
+                              <Flame className="w-3 h-3" />
+                              {daysLeft}d
+                            </span>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {progressPercent.toFixed(0)}% complete
-                          </p>
+                          
+                          <div className="mt-2">
+                            <div className="h-3 bg-secondary rounded-full overflow-hidden">
+                              <div 
+                                className={cn(
+                                  "h-full rounded-full transition-all duration-700 bg-gradient-to-r",
+                                  color
+                                )}
+                                style={{ width: `${progressPercent}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {progressPercent.toFixed(0)}% complete
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-          ) : (
-            <Card className="p-5 text-center text-muted-foreground">
-              <Zap className="w-10 h-10 mx-auto mb-2 text-muted-foreground/50" />
-              <p className="text-sm">No challenges yet. Ask your parent to create one!</p>
-            </Card>
-          )}
-        </section>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : (
+              <Card className="p-5 text-center text-muted-foreground h-full flex flex-col items-center justify-center">
+                <Zap className="w-10 h-10 mx-auto mb-2 text-muted-foreground/50" />
+                <p className="text-sm">No challenges yet. Ask your parent to create one!</p>
+              </Card>
+            )}
+          </section>
+        </div>
 
-        {/* Badges Collection - Horizontal scroll */}
+        {/* Badges Collection - Responsive grid */}
         <section>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -454,11 +458,11 @@ export default function KidView() {
             <span className="text-xs text-muted-foreground">{totalEarnedBadges}/{allBadgeTypes.length}</span>
           </div>
           
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {badgeDisplay.map((badge, index) => (
               <div 
                 key={badge.type} 
-                className="animate-fade-in snap-start shrink-0"
+                className="animate-fade-in flex justify-center"
                 style={{ animationDelay: `${index * 80}ms` }}
               >
                 <AchievementBadge 
@@ -472,14 +476,14 @@ export default function KidView() {
         </section>
 
         {/* Motivational Footer */}
-        <Card className="p-5 bg-gradient-to-r from-accent via-orange-400 to-amber-400 text-white text-center relative overflow-hidden">
+        <Card className="p-5 md:p-6 bg-gradient-to-r from-accent via-orange-400 to-amber-400 text-white text-center relative overflow-hidden">
           <div className="absolute -top-4 -left-4 text-5xl opacity-20">🎯</div>
           <div className="absolute -bottom-4 -right-4 text-5xl opacity-20">🌟</div>
           
           <div className="relative z-10">
-            <Gift className="w-10 h-10 mx-auto mb-2" />
-            <h3 className="text-lg font-bold mb-1">Keep Going!</h3>
-            <p className="text-sm text-white/90">
+            <Gift className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-2" />
+            <h3 className="text-lg md:text-xl font-bold mb-1">Keep Going!</h3>
+            <p className="text-sm md:text-base text-white/90">
               Complete challenges to earn badges and level up! 🚀
             </p>
           </div>
