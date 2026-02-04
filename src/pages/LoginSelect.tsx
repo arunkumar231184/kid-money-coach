@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Coins, ArrowLeft, Users, Baby } from "lucide-react";
+import { Coins, ArrowLeft, Users } from "lucide-react";
 
 export default function LoginSelect() {
   return (
@@ -40,45 +40,24 @@ export default function LoginSelect() {
               </p>
             </div>
             
-            <div className="space-y-4">
-              {/* Parent Login */}
-              <Link to="/auth" className="block">
-                <Card className="p-6 border-2 hover:border-primary hover:shadow-card transition-all cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <Users className="w-7 h-7 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-foreground mb-1">
-                        Parent Login
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Access your family dashboard
-                      </p>
-                    </div>
+            {/* Parent Login */}
+            <Link to="/auth" className="block">
+              <Card className="p-6 border-2 hover:border-primary hover:shadow-card transition-all cursor-pointer group">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Users className="w-7 h-7 text-primary" />
                   </div>
-                </Card>
-              </Link>
-              
-              {/* Kid Login */}
-              <Link to="/kid-login" className="block">
-                <Card className="p-6 border-2 hover:border-primary hover:shadow-card transition-all cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-success/10 flex items-center justify-center group-hover:bg-success/20 transition-colors">
-                      <Baby className="w-7 h-7 text-success" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-foreground mb-1">
-                        Kid Login
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Log in with your PIN code
-                      </p>
-                    </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-foreground mb-1">
+                      Log In
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Access your family dashboard
+                    </p>
                   </div>
-                </Card>
-              </Link>
-            </div>
+                </div>
+              </Card>
+            </Link>
             
             <div className="mt-8 text-center">
               <p className="text-sm text-muted-foreground">
