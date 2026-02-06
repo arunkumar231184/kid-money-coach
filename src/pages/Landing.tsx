@@ -11,7 +11,15 @@ import {
   CheckCircle2,
   ArrowRight,
   Sparkles,
-  Star
+  Star,
+  Gamepad2,
+  Target,
+  TrendingUp,
+  Award,
+  Flame,
+  Wallet,
+  Users,
+  Heart
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-illustration.png";
@@ -46,6 +54,56 @@ const features = [
     icon: Smartphone,
     title: "Mobile First",
     description: "Designed for quick checks on your phone. Dashboard loads in seconds."
+  },
+];
+
+const kidFeatures = [
+  {
+    icon: Gamepad2,
+    title: "Their Own Fun Dashboard",
+    description: "Kids get a colorful, game-like dashboard designed just for them. Easy PIN login means they can check their progress anytime.",
+    color: "bg-success-light text-success"
+  },
+  {
+    icon: Target,
+    title: "Visual Savings Goals",
+    description: "Watch the savings thermometer fill up as they get closer to that new game, trainers, or concert tickets!",
+    color: "bg-primary-light text-primary"
+  },
+  {
+    icon: Award,
+    title: "Badges & Achievements",
+    description: "Earn badges for smart money decisions. From 'First Saver' to 'Challenge Champion' — collect them all!",
+    color: "bg-badge-gold/20 text-badge-gold"
+  },
+  {
+    icon: Flame,
+    title: "Streaks & XP Points",
+    description: "Build saving streaks and level up with XP. The longer they stick to good habits, the more they earn!",
+    color: "bg-destructive/10 text-destructive"
+  },
+];
+
+const learningBenefits = [
+  {
+    icon: TrendingUp,
+    title: "Real Money, Real Lessons",
+    description: "Kids learn from their actual spending, not fake scenarios. Every Costa run becomes a teachable moment."
+  },
+  {
+    icon: Wallet,
+    title: "Spending Awareness",
+    description: "Categorized spending shows exactly where money goes. 'I spent HOW much on snacks?!' is a common revelation."
+  },
+  {
+    icon: Users,
+    title: "Family Conversations",
+    description: "Weekly insights give parents natural conversation starters about money — no awkward lectures needed."
+  },
+  {
+    icon: Heart,
+    title: "Lifelong Habits",
+    description: "Research shows financial habits form by age 7. We help reinforce positive behaviors during the crucial teen years."
   },
 ];
 
@@ -187,6 +245,111 @@ export default function Landing() {
                 <p className="text-muted-foreground">{feature.description}</p>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Kid Dashboard Section */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-success/5 via-primary/5 to-badge-gold/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-success-light text-success px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Gamepad2 className="w-4 h-4" />
+              Made for kids aged 11-17
+            </div>
+            <h2 className="text-display-sm md:text-display-md font-bold text-foreground mb-4">
+              A dashboard kids actually <span className="text-success">want</span> to use
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Forget boring spreadsheets. Our kid-friendly dashboard turns money management into a game with XP, badges, challenges, and visual progress tracking.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {kidFeatures.map((feature, index) => (
+              <Card 
+                key={feature.title} 
+                className="p-6 border-2 hover:shadow-card transition-all animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className={`w-14 h-14 rounded-xl ${feature.color} flex items-center justify-center mb-4`}>
+                  <feature.icon className="w-7 h-7" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground text-sm">{feature.description}</p>
+              </Card>
+            ))}
+          </div>
+
+          {/* Kid Dashboard Preview */}
+          <Card className="p-6 md:p-8 max-w-4xl mx-auto border-2 border-dashed border-primary/30 bg-card/50">
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div className="p-4 rounded-xl bg-primary-light">
+                <Trophy className="w-8 h-8 text-primary mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">12</p>
+                <p className="text-sm text-muted-foreground">Badges Earned</p>
+              </div>
+              <div className="p-4 rounded-xl bg-success-light">
+                <Flame className="w-8 h-8 text-success mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">7 Days</p>
+                <p className="text-sm text-muted-foreground">Saving Streak</p>
+              </div>
+              <div className="p-4 rounded-xl bg-badge-gold/20">
+                <Star className="w-8 h-8 text-badge-gold mx-auto mb-2" />
+                <p className="text-2xl font-bold text-foreground">Level 5</p>
+                <p className="text-sm text-muted-foreground">Money Master</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      {/* Financial Learning Benefits */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-display-sm md:text-display-md font-bold text-foreground mb-4">
+              Financial education that actually <span className="text-primary">works</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Studies show teens who understand money early are more likely to save, avoid debt, and build wealth as adults.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {learningBenefits.map((benefit, index) => (
+              <div 
+                key={benefit.title} 
+                className="flex gap-4 animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center flex-shrink-0">
+                  <benefit.icon className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-1">{benefit.title}</h3>
+                  <p className="text-muted-foreground">{benefit.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Stats callout */}
+          <div className="mt-12 p-6 md:p-8 rounded-2xl bg-primary/5 border border-primary/20 max-w-3xl mx-auto">
+            <div className="grid grid-cols-3 gap-6 text-center">
+              <div>
+                <p className="text-3xl md:text-4xl font-bold text-primary">73%</p>
+                <p className="text-sm text-muted-foreground mt-1">of teens say they want to learn more about money</p>
+              </div>
+              <div>
+                <p className="text-3xl md:text-4xl font-bold text-primary">2x</p>
+                <p className="text-sm text-muted-foreground mt-1">more likely to save with visual goals</p>
+              </div>
+              <div>
+                <p className="text-3xl md:text-4xl font-bold text-primary">89%</p>
+                <p className="text-sm text-muted-foreground mt-1">of parents see improved money habits</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
