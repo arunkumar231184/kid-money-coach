@@ -19,7 +19,8 @@ import {
   Flame,
   Wallet,
   Users,
-  Heart
+  Heart,
+  Quote
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-illustration.png";
@@ -111,6 +112,57 @@ const steps = [
   { step: 1, title: "Sign up free", description: "Create your parent account in 30 seconds" },
   { step: 2, title: "Link bank account", description: "Securely connect your child's youth account" },
   { step: 3, title: "Start learning", description: "Set challenges and watch progress together" },
+];
+
+const testimonials = [
+  {
+    type: "parent",
+    name: "Sarah M.",
+    location: "Manchester",
+    avatar: "👩",
+    quote: "My 14-year-old finally understands where his money goes! The weekly insights have made our money chats so much easier. No more arguments about spending.",
+    highlight: "No more arguments about spending"
+  },
+  {
+    type: "kid",
+    name: "Jake, 15",
+    location: "London",
+    avatar: "🧑",
+    quote: "I love the badges! I've saved £120 for my new headphones and I'm only £30 away. The streak feature keeps me motivated to save every week.",
+    highlight: "Saved £120 for headphones"
+  },
+  {
+    type: "parent",
+    name: "David & Claire T.",
+    location: "Birmingham",
+    avatar: "👨‍👩‍👧",
+    quote: "We have three kids and YouthMentor has been a game-changer. Each child has their own goals and challenges. It's brought healthy competition into our home!",
+    highlight: "Game-changer for 3 kids"
+  },
+  {
+    type: "kid",
+    name: "Mia, 13",
+    location: "Bristol",
+    avatar: "👧",
+    quote: "I didn't realise I was spending so much on snacks until I saw the categories. Now I pack my own lunch and I'm saving for Taylor Swift tickets!",
+    highlight: "Saving for concert tickets"
+  },
+  {
+    type: "parent",
+    name: "James P.",
+    location: "Edinburgh",
+    avatar: "👨",
+    quote: "The 'No Impulse Buys' challenge was brilliant for my son. He went from buying random stuff online to actually thinking about purchases first.",
+    highlight: "Stopped impulse buying"
+  },
+  {
+    type: "kid",
+    name: "Ollie, 16",
+    location: "Leeds",
+    avatar: "🧑‍🦱",
+    quote: "I'm Level 7 now and I've got 18 badges! It's actually fun to save money. My friends are jealous of my savings tracker app.",
+    highlight: "Level 7 with 18 badges"
+  },
 ];
 
 const supportedBanks = ["Santander 123 Mini", "Lloyds Smart Start", "NatWest Adapt", "Nationwide FlexOne"];
@@ -373,6 +425,90 @@ export default function Landing() {
                 <p className="text-muted-foreground">{step.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-badge-gold/20 text-badge-gold px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <Star className="w-4 h-4 fill-current" />
+              Real stories from real families
+            </div>
+            <h2 className="text-display-sm md:text-display-md font-bold text-foreground mb-4">
+              Loved by parents <span className="text-primary">and</span> kids
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              See how YouthMentor is helping UK families build better money habits together.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <Card 
+                key={testimonial.name}
+                className={`p-6 border-2 animate-fade-in relative overflow-hidden ${
+                  testimonial.type === 'kid' 
+                    ? 'border-success/30 bg-success/5' 
+                    : 'border-primary/30 bg-primary/5'
+                }`}
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {/* Quote icon */}
+                <Quote className={`w-8 h-8 mb-4 ${
+                  testimonial.type === 'kid' ? 'text-success/30' : 'text-primary/30'
+                }`} />
+                
+                {/* Quote text */}
+                <p className="text-foreground mb-4 leading-relaxed">
+                  "{testimonial.quote}"
+                </p>
+
+                {/* Highlight badge */}
+                <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-4 ${
+                  testimonial.type === 'kid' 
+                    ? 'bg-success-light text-success' 
+                    : 'bg-primary-light text-primary'
+                }`}>
+                  {testimonial.highlight}
+                </div>
+
+                {/* Author */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${
+                    testimonial.type === 'kid' ? 'bg-success-light' : 'bg-primary-light'
+                  }`}>
+                    {testimonial.avatar}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      {testimonial.location}
+                      <span className="mx-1">•</span>
+                      <span className={`font-medium ${
+                        testimonial.type === 'kid' ? 'text-success' : 'text-primary'
+                      }`}>
+                        {testimonial.type === 'kid' ? 'Young Saver' : 'Parent'}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Trust indicators */}
+          <div className="mt-12 text-center">
+            <div className="flex items-center justify-center gap-1 mb-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Star key={i} className="w-6 h-6 text-badge-gold fill-current" />
+              ))}
+            </div>
+            <p className="text-muted-foreground">
+              <span className="font-semibold text-foreground">4.9/5</span> average rating from 500+ UK families
+            </p>
           </div>
         </div>
       </section>
