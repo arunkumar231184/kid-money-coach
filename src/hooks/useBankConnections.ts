@@ -40,8 +40,8 @@ export function useConnectBank() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase.functions.invoke("truelayer-auth?action=get-auth-url", {
-        body: { kidId, redirectUri },
+      const { data, error } = await supabase.functions.invoke("truelayer-auth", {
+        body: { kidId, redirectUri, action: "get-auth-url" },
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
 
@@ -66,8 +66,8 @@ export function useExchangeBankCode() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase.functions.invoke("truelayer-auth?action=exchange-code", {
-        body: { code, state, redirectUri },
+      const { data, error } = await supabase.functions.invoke("truelayer-auth", {
+        body: { code, state, redirectUri, action: "exchange-code" },
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
 

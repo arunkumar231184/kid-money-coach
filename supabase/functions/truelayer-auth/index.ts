@@ -21,23 +21,22 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const action = url.searchParams.get("action");
-    
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    // Verify user is authenticated
+    // Verify user is authenticated (except for OPTIONS)
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader && action !== "callback") {
+    if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    
+    const body = await req.json();
+    const action = body.action;
 
     if (action === "get-auth-url") {
       // Generate TrueLayer authorization URL
-      const body = await req.json();
       const { kidId, redirectUri } = body;
 
       if (!kidId || !redirectUri) {
@@ -67,7 +66,6 @@ Deno.serve(async (req) => {
 
     if (action === "exchange-code") {
       // Exchange authorization code for tokens
-      const body = await req.json();
       const { code, state, redirectUri } = body;
 
       if (!code || !state || !redirectUri) {
@@ -183,7 +181,6 @@ Deno.serve(async (req) => {
     }
 
     if (action === "refresh-token") {
-      const body = await req.json();
       const { connectionId } = body;
 
       // Get connection from database
